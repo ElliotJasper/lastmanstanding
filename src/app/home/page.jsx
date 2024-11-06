@@ -185,7 +185,7 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold">Football Last Man Standing</h1>
           <nav>
             <Button variant="ghost" asChild className="text-white hover:text-[#e01883]">
-              <Link href="#">Profile</Link>
+              <Link href={`/profile/${user.id}`}>Profile</Link>
             </Button>
             <Button
               onClick={handleLogout}
