@@ -8,7 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Trophy, ArrowRight, Star, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Trophy,
+  ArrowRight,
+  Star,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  PlayCircle,
+} from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import Link from "next/link";
@@ -92,6 +100,7 @@ export default function TeamSelectionPage({ params }) {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState();
   const [expandedUser, setExpandedUser] = useState(null);
+  const [leagueInfo, setLeagueInfo] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -101,7 +110,6 @@ export default function TeamSelectionPage({ params }) {
         data: { user },
         error,
       } = await supabase.auth.getUser();
-
       if (user != null) {
         setUser(user);
       } else {
@@ -119,7 +127,6 @@ export default function TeamSelectionPage({ params }) {
         setPicks(data.availablePicks);
         setIsEliminated(data.isEliminated);
         setGameWeeks(data.gameWeeks);
-        setLoading(false);
         console.log(loading);
         setWinner(data.winner);
 
