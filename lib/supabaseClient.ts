@@ -241,4 +241,23 @@ export class SupabaseClient {
       throw new Error(`Error joining league: ${joinLeagueError.message}`);
     }
   }
+
+  /**
+   * Get info about a league
+   * @param leagueId
+   * @returns
+   */
+  async getLeagueInfo(leagueId: number): Promise<any> {
+    const { data: league, error: leagueError } = await this.client
+      .from("leagues")
+      .select("isactive, user_id")
+      .eq("id", leagueId)
+      .single();
+
+    if (leagueError) {
+      throw new Error(`Error fetching league info: ${leagueError.message}`);
+    }
+
+    return league;
+  }
 }
