@@ -203,6 +203,17 @@ export default function TeamSelectionPage({ params }) {
     setExpandedUser(expandedUser === userId ? null : userId);
   };
 
+  const handleActivate = async () => {
+    await fetch(`/api/activate-league/${params.leagueId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    window.location.reload();
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
