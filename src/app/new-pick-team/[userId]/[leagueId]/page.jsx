@@ -147,6 +147,17 @@ export default function TeamSelectionPage({ params }) {
       }
     };
 
+    const fetchLeagueInfo = async () => {
+      try {
+        const data = await getLeagueInfo(params.leagueId);
+        setLeagueInfo(data);
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchLeagueInfo();
     fetchUsers();
     fetchPicks();
   }, [params.userId, params.leagueId]);
