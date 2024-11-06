@@ -65,6 +65,21 @@ const getUsers = async (leagueId) => {
   return data;
 };
 
+const getLeagueInfo = async (leagueId) => {
+  const response = await fetch(`/api/get-league/${leagueId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch league info");
+  }
+  const data = await response.json();
+  console.log("isactive", data);
+  return data;
+};
+
 export default function TeamSelectionPage({ params }) {
   const [picks, setPicks] = useState([]);
   const [selectedPick, setSelectedPick] = useState(null);
