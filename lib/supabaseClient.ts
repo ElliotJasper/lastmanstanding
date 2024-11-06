@@ -275,4 +275,18 @@ export class SupabaseClient {
       throw new Error(`Error activating league: ${leagueError.message}`);
     }
   }
+
+  async getProfile(userId: string): Promise<any> {
+    const { data: profile, error: profileError } = await this.client
+      .from("profiles")
+      .select("display_name") // Will also be PFP url
+      .eq("user_id", userId)
+      .single();
+
+    if (profileError) {
+      throw new Error(`Error fetching profile: ${profileError.message}`);
+    }
+
+    return profile;
+  }
 }
