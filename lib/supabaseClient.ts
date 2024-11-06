@@ -260,4 +260,19 @@ export class SupabaseClient {
 
     return league;
   }
+
+  /**
+   * Set the league as active
+   * @param leagueId
+   */
+  async activateLeague(leagueId: number): Promise<void> {
+    const { error: leagueError } = await this.client
+      .from("leagues")
+      .update({ isactive: true })
+      .eq("id", leagueId);
+
+    if (leagueError) {
+      throw new Error(`Error activating league: ${leagueError.message}`);
+    }
+  }
 }
