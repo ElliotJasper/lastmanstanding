@@ -135,7 +135,7 @@ export default function HomePage() {
       const response = await fetch("/api/join-league", {
         method: "POST",
         headers: {
-          "Conent-Type": "application/json",
+          "Content-Type": "application/json", // Fixed typo in "Content-Type"
         },
         body: JSON.stringify(formData),
       });
@@ -144,9 +144,14 @@ export default function HomePage() {
         console.log("League joined successfully");
         window.location.reload();
       } else {
-        console.error("Failed to join league");
+        // Handle HTTP errors by parsing the response error message
+        const errorData = await response.json();
+        alert(`Failed to join league: ${errorData.message || "Unknown error"}`);
+        console.error("Failed to join league:", errorData);
       }
     } catch (error) {
+      // Handle any network or unexpected errors
+      alert(`Failed to join league: ${error.message}`);
       console.error("Error:", error);
     }
   };
