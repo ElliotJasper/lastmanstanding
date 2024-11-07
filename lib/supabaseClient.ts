@@ -294,4 +294,21 @@ export class SupabaseClient {
 
     return profile;
   }
+
+  /**
+   * Update the profile of a user
+   * @param userId
+   * @param displayName
+   */
+  async updateProfile(userId: string, displayName: string): Promise<void> {
+    const { error: profileError } = await this.client
+      .from("profiles")
+      .update({ display_name: displayName })
+      .eq("user_id", userId);
+
+    if (profileError) {
+      console.error("Error updating profile:", profileError.message);
+      throw profileError;
+    }
+  }
 }
