@@ -184,9 +184,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Football Last Man Standing</h1>
           <nav>
-            <Button variant="ghost" asChild className="text-white hover:text-[#e01883]">
-              <Link href={`#`}>Profile</Link>
-            </Button>
+            {user && user.id && (
+              <Button variant="ghost" asChild className="text-white hover:text-[#e01883]">
+                <Link href={`/profile/${user.id}`}>Profile</Link>
+              </Button>
+            )}
+
             <Button
               onClick={handleLogout}
               variant="ghost"
