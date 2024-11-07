@@ -284,7 +284,7 @@ export class SupabaseClient {
   async getProfile(userId: string): Promise<any> {
     const { data: profile, error: profileError } = await this.client
       .from("profiles")
-      .select("display_name") // Will also be PFP url
+      .select("display_name")
       .eq("user_id", userId)
       .single();
 
