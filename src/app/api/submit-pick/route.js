@@ -3,7 +3,6 @@ import { createClient } from "../../../../utils/supabase/server.js";
 export async function POST(req) {
   const supabase = createClient();
   const formData = await req.json();
-  console.log("formdata: ", formData);
 
   // Get the authenticated user from Supabase
   const {
