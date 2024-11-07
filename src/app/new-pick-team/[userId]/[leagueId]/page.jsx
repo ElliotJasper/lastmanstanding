@@ -374,7 +374,7 @@ export default function TeamSelectionPage({ params }) {
                           <CollapsibleTrigger asChild>
                             <div
                               className="flex items-center justify-between cursor-pointer"
-                              onClick={() => toggleUserExpansion(user.user_id)}
+                              onClick={() => toggleUserExpansion(user.id)}
                             >
                               <div className="flex items-center space-x-3">
                                 <Avatar className="h-8 w-8">
