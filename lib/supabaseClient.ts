@@ -276,6 +276,11 @@ export class SupabaseClient {
     }
   }
 
+  /**
+   * Get the profile of a user
+   * @param userId
+   * @returns
+   */
   async getProfile(userId: string): Promise<any> {
     const { data: profile, error: profileError } = await this.client
       .from("profiles")
