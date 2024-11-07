@@ -227,11 +227,27 @@ export class SupabaseClient {
   }
 
   /**
-   * Adds a user to a league
+   * Adds a user to a league if the league is inactive
    * @param userId
    * @param leagueId
    */
   async addUserToLeague(userId: string, leagueId: number): Promise<void> {
+    // Check if the league is inactive
+    const { data: league, error: leagueCheckError } = await this.client
+      .from("leagues")
+      .select("isactive")
+      .eq("id", leagueId)
+      .single();
+
+    if (leagueCheckError) {
+      throw new Error(`Error fetching league status: ${leagueCheckError.message}`);
+    }
+
+    if (league?.isactive) {
+      throw new Error(`Cannot join league: the league is active`);
+    }
+
+    // Proceed to add user to league
     const { data: added, error: joinLeagueError } = await this.client.from("league_users").insert({
       user_id: userId,
       league_id: leagueId,
