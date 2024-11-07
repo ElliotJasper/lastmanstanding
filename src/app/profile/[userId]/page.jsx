@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "../../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,17 +10,61 @@ import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+const getUserInfo = async (userId) => {
+  const response = await fetch(`/api/get-user-info/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user profile");
+  }
+
+  return response.json();
+};
+
 export default function ProfilePage({ params }) {
   const [displayName, setDisplayName] = useState("John Doe");
+  const [user, setUser] = useState(null);
   const [newDisplayName, setNewDisplayName] = useState("");
   const [profilePicture, setProfilePicture] = useState("/placeholder.svg?height=128&width=128");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    console.log("User ID:", params.userId);
-  });
+    const supabase = createClient();
+
+    const checkAuth = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (user != null) {
+        setUser(user);
+        getUserData();
+      } else {
+        // If there's no user, redirect to login
+        window.location.href = "/login";
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const getUserData = async () => {
+    try {
+      const data = await getUserInfo(params.userId);
+      console.log(data);
+      setProfile(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleDisplayNameChange = (e) => {
     setNewDisplayName(e.target.value);
@@ -36,25 +81,29 @@ export default function ProfilePage({ params }) {
     }
   };
 
+  const updateProfile = async (userId, displayName) => {
+    const response = await fetch(`/api/update-user-info/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ display_name: displayName }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user profile");
+    }
+
+    window.location.reload();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setSuccess(null);
-
+    updateProfile(params.userId, newDisplayName);
     // Simulate API call
-    setTimeout(() => {
-      if (newDisplayName.length < 2) {
-        setError("Display name must be at least 2 characters long.");
-        setIsLoading(false);
-        return;
-      }
-
-      setDisplayName(newDisplayName);
-      setNewDisplayName("");
-      setSuccess("Profile updated successfully!");
-      setIsLoading(false);
-    }, 1500);
   };
 
   return (
@@ -68,7 +117,7 @@ export default function ProfilePage({ params }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center space-y-4">
+            {/* <div className="flex flex-col items-center space-y-4">
               <Avatar className="w-32 h-32">
                 <AvatarImage src={profilePicture} alt="Profile picture" />
                 <AvatarFallback>{displayName.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -86,13 +135,13 @@ export default function ProfilePage({ params }) {
                 onChange={handleProfilePictureChange}
                 className="hidden"
               />
-            </div>
+            </div> */}
             <div className="space-y-2">
               <Label htmlFor="display-name">Display Name</Label>
               <Input
                 id="display-name"
                 type="text"
-                placeholder="Enter your display name"
+                placeholder={profile?.display_name ?? "Enter display name"}
                 value={newDisplayName}
                 onChange={handleDisplayNameChange}
               />
