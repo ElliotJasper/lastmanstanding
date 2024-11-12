@@ -327,4 +327,12 @@ export class SupabaseClient {
       throw profileError;
     }
   }
+
+  async downloadAvatar() {
+    const { data, error } = await this.client.storage.from("avatars").download("default-pfp.jpg");
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data;
+  }
 }
