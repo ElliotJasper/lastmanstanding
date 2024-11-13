@@ -328,11 +328,54 @@ export class SupabaseClient {
     }
   }
 
-  async downloadAvatar() {
-    const { data, error } = await this.client.storage.from("avatars").download("default-pfp.jpg");
+  async downloadAvatar(userId: string) {
+    // List all files in the "avatars" bucket
+    const { data, error } = await this.client.storage.from("avatars").list();
+
     if (error) {
       throw new Error(error.message);
     }
+
+    // Try to find the file with the userId and possible extensions (e.g., .png, .jpg)
+    const possibleExtensions = ["png", "jpg", "jpeg", "gif"]; // Add more extensions if needed
+    for (const ext of possibleExtensions) {
+      const fileName = `${userId}.${ext}`;
+      const file = data.find((file) => file.name === fileName);
+
+      if (file) {
+        // If file is found, download and return it
+        const { data: avatarData, error: avatarError } = await this.client.storage
+          .from("avatars")
+          .download(file.name);
+
+        if (avatarError) {
+          throw new Error(avatarError.message);
+        }
+        return avatarData;
+      }
+    }
+
+    // If no file is found, return the default avatar
+    const { data: defaultAvatar, error: defaultAvatarError } = await this.client.storage
+      .from("avatars")
+      .download("default-pfp.jpg");
+
+    if (defaultAvatarError) {
+      throw new Error(defaultAvatarError.message);
+    }
+
+    return defaultAvatar;
+  }
+
+  async uploadAvatar(filePath: string, fileBuffer: Buffer, mimeType: string) {
+    const { data, error } = await this.client.storage.from("avatars").upload(filePath, fileBuffer, {
+      contentType: mimeType,
+    });
+
+    if (error) {
+      throw new Error(`Failed to upload avatar: ${error.message}`);
+    }
+    console.log("Upload success:", data);
     return data;
   }
 }
