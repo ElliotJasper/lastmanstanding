@@ -25,15 +25,30 @@ const getUserInfo = async (userId) => {
   return response.json();
 };
 
+const getAvatar = async (userId) => {
+  const response = await fetch(`/api/get-user-avatar/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch user avatar");
+  }
+
+  const blob = await response.blob();
+  return URL.createObjectURL(blob); // Convert blob to object URL
+};
+
 export default function ProfilePage({ params }) {
-  const [displayName, setDisplayName] = useState("John Doe");
+  const [displayName, setDisplayName] = useState("");
   const [user, setUser] = useState(null);
-  const [newDisplayName, setNewDisplayName] = useState("");
-  const [profilePicture, setProfilePicture] = useState("/placeholder.svg?height=128&width=128");
+  const [profilePicture, setProfilePicture] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [hasUpdatedAvatar, setHasUpdatedAvatar] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -54,20 +69,30 @@ export default function ProfilePage({ params }) {
     };
 
     checkAuth();
+    getUserAvatar();
   }, []);
 
   const getUserData = async () => {
     try {
       const data = await getUserInfo(params.userId);
-      console.log(data);
-      setProfile(data);
+      setDisplayName(data.display_name);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getUserAvatar = async () => {
+    try {
+      const blobUrl = await getAvatar(params.userId);
+      console.log("Blob URL:", blobUrl);
+      setProfilePicture(blobUrl); // Set blob URL as profile picture
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleDisplayNameChange = (e) => {
-    setNewDisplayName(e.target.value);
+    setDisplayName(e.target.value);
   };
 
   const handleProfilePictureChange = (e) => {
@@ -79,31 +104,38 @@ export default function ProfilePage({ params }) {
       };
       reader.readAsDataURL(file);
     }
+    setHasUpdatedAvatar(true);
   };
 
-  const updateProfile = async (userId, displayName) => {
+  const updateProfile = async (userId, displayName, profilePicture) => {
+    const body = {
+      display_name: displayName,
+    };
+    if (hasUpdatedAvatar) {
+      body.profile_picture = profilePicture;
+    } else {
+      body.profile_picture = null;
+    }
     const response = await fetch(`/api/update-user-info/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ display_name: displayName }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw new Error("Failed to update user profile");
     }
-
-    window.location.reload();
+    //window.location.reload();
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
     setSuccess(null);
-    updateProfile(params.userId, newDisplayName);
-    // Simulate API call
+
+    updateProfile(params.userId, displayName, profilePicture);
   };
 
   return (
@@ -117,11 +149,12 @@ export default function ProfilePage({ params }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-4">
               <Avatar className="w-32 h-32">
                 <AvatarImage src={profilePicture} alt="Profile picture" />
-                <AvatarFallback>{displayName.slice(0, 2).toUpperCase()}</AvatarFallback>
+                {/* <AvatarFallback>{displayName.slice(0, 2).toUpperCase()}</AvatarFallback> */}
               </Avatar>
+
               <Label
                 htmlFor="profile-picture"
                 className="cursor-pointer bg-[#4a82b0] text-white py-2 px-4 rounded hover:bg-[#4a82b0]/90 transition-colors"
@@ -135,14 +168,14 @@ export default function ProfilePage({ params }) {
                 onChange={handleProfilePictureChange}
                 className="hidden"
               />
-            </div> */}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="display-name">Display Name</Label>
               <Input
                 id="display-name"
                 type="text"
                 placeholder={profile?.display_name ?? "Enter display name"}
-                value={newDisplayName}
+                value={displayName}
                 onChange={handleDisplayNameChange}
               />
             </div>
