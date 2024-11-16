@@ -321,7 +321,6 @@ export class SupabaseClient {
       .from("profiles")
       .update({ display_name: displayName })
       .eq("user_id", userId);
-
     if (profileError) {
       console.error("Error updating profile:", profileError.message);
       throw profileError;
@@ -372,15 +371,50 @@ export class SupabaseClient {
     return defaultAvatar;
   }
 
-  async uploadAvatar(filePath: string, fileBuffer: Buffer, mimeType: string) {
-    const { data, error } = await this.client.storage.from("avatars").upload(filePath, fileBuffer, {
-      contentType: mimeType,
-    });
+  /**
+   * Uploads the avatar of a user and deletes the previous one if it exists
+   * @param userId
+   * @param fileBuffer
+   * @param mimeType
+   * @returns
+   */
+  async uploadAvatar(userId: string, fileBuffer: Buffer, mimeType: string) {
+    // List all files in the "avatars" bucket
+    const { data: listData, error: listError } = await this.client.storage.from("avatars").list();
 
-    if (error) {
-      throw new Error(`Failed to upload avatar: ${error.message}`);
+    if (listError) {
+      throw new Error(`Failed to list files: ${listError.message}`);
     }
-    console.log("Upload success:", data);
-    return data;
+
+    // Find any file that starts with the userId (e.g., "userId.extension")
+    const existingFile = listData?.find((file) => file.name.startsWith(userId));
+
+    // If an existing file is found, delete it
+    if (existingFile) {
+      const { error: deleteError } = await this.client.storage
+        .from("avatars")
+        .remove([existingFile.name]);
+      if (deleteError) {
+        throw new Error(`Failed to delete existing avatar: ${deleteError.message}`);
+      }
+    }
+
+    // Construct the new file path with userId and appropriate extension based on mimeType
+    const extension = mimeType.split("/")[1];
+    const newFilePath = `${userId}`;
+
+    // Upload the new avatar
+    const { data: uploadData, error: uploadError } = await this.client.storage
+      .from("avatars")
+      .upload(newFilePath, fileBuffer, {
+        contentType: mimeType,
+      });
+
+    if (uploadError) {
+      throw new Error(`Failed to upload avatar: ${uploadError.message}`);
+    }
+
+    console.log("Upload success:", uploadData);
+    return uploadData;
   }
 }
