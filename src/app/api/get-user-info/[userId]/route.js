@@ -10,7 +10,6 @@ export async function GET(req, { params }) {
     return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
   }
 
-  // Fetch the league isactive / other info
   const userInfo = await supabaseClient.getProfile(userId);
   return new Response(JSON.stringify(userInfo), { status: 200 });
 }
