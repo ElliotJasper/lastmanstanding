@@ -328,6 +328,11 @@ export class SupabaseClient {
     }
   }
 
+  /**
+   * Downloads the avatar of a user
+   * @param userId
+   * @returns
+   */
   async downloadAvatar(userId: string) {
     // List all files in the "avatars" bucket
     const { data, error } = await this.client.storage.from("avatars").list();
