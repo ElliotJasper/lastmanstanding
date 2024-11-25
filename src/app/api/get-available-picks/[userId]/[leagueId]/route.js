@@ -15,8 +15,8 @@ export async function GET(req, { params }) {
   // Fetch all possible picks, user picks, and league user data
   const [availablePicks, userPicks, leagueUser] = await Promise.all([
     supabaseClient.getPickableGames(),
-    supabaseClient.getUserPicks(userId, parseInt(leagueId)),
-    supabaseClient.getLeagueUserData(userId, parseInt(leagueId)),
+    supabaseClient.getUserPicks(userData.id, parseInt(leagueId)),
+    supabaseClient.getLeagueUserData(userData.id, parseInt(leagueId)),
   ]);
 
   // Filter available picks by excluding teams already picked by the user
@@ -33,7 +33,7 @@ export async function GET(req, { params }) {
   // Return response with relevant data
   return new Response(
     JSON.stringify({
-      userId,
+      userId: userData.id,
       leagueId,
       isEliminated: leagueUser.isEliminated,
       availablePicks: availablePicksWithImages,

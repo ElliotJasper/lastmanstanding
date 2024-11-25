@@ -10,6 +10,6 @@ export async function GET(req, { params }) {
     return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
   }
 
-  const userInfo = await supabaseClient.getProfile(userId);
+  const userInfo = await supabaseClient.getProfile(userData.id);
   return new Response(JSON.stringify(userInfo), { status: 200 });
 }

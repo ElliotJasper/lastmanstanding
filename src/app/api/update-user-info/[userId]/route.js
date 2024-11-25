@@ -26,7 +26,7 @@ export async function POST(req, { params }) {
       }
 
       // Find existing avatar file for this user (checking all possible extensions)
-      const existingAvatar = listData?.find((file) => file.name.startsWith(`${userId}.`));
+      const existingAvatar = listData?.find((file) => file.name.startsWith(`${userData.id}.`));
 
       if (existingAvatar) {
         console.log("Found existing avatar:", existingAvatar.name);
