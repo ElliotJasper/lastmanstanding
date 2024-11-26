@@ -414,7 +414,6 @@ export class SupabaseClient {
       throw new Error(`Failed to upload avatar: ${uploadError.message}`);
     }
 
-    console.log("Upload success:", uploadData);
     return uploadData;
   }
 
