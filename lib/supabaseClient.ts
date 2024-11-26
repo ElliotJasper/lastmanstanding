@@ -422,8 +422,8 @@ export class SupabaseClient {
    * @param userId 
    * @returns 
    */
-  async function generateAvatarUrl(userId) {
-    const { data: files, error } = await supabaseClient.storage.from("avatars").list();
+  async function generateAvatarUrl(userId: string): Promise<string> {
+    const { data: files, error } = await this.client.storage.from("avatars").list();
   
     if (error) {
       throw new Error(`Error listing files: ${error.message}`);
