@@ -417,6 +417,11 @@ export class SupabaseClient {
     return uploadData;
   }
 
+  /**
+   * Generates the avatar URL of a user
+   * @param userId 
+   * @returns 
+   */
   async function generateAvatarUrl(userId) {
     const { data: files, error } = await supabaseClient.storage.from("avatars").list();
   
