@@ -1,6 +1,16 @@
 import { createClient } from "../../../../utils/supabase/server.js";
+import { SupabaseClient } from "../../../../lib/supabaseClient.ts";
 
 export async function POST(req) {
+  const supabaseClient = new SupabaseClient();
+
+  const userData = await supabaseClient.getAuthenticatedUser();
+  if (!userData) {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), {
+      status: 401,
+    });
+  }
+  //************************************************** */
   const supabase = createClient();
   const formData = await req.json();
 
@@ -17,41 +27,17 @@ export async function POST(req) {
     });
   }
 
-  // Check if the user is allowed to make a pick (i.e., canPick is true and isEliminated is false)
-  const { data: leagueUser, error: leagueUserError } = await supabase
-    .from("league_users")
-    .select("canPick, isEliminated")
-    .eq("user_id", formData.userId)
-    .eq("league_id", parseInt(formData.leagueId))
-    .single(); // We expect a single record (composite key)
-
-  if (leagueUserError || !leagueUser) {
-    console.error("Error fetching league user:", leagueUserError?.message);
-    return new Response(JSON.stringify({ message: "User not found in league." }), {
-      status: 400,
-    });
-  }
+  const leagueUserData = await supabaseClient.getLeagueUserData(userData.id, formData.leagueId);
 
   // Check if the user can make a pick or is eliminated
-  if (!leagueUser.canPick || leagueUser.isEliminated) {
+  if (!leagueUserData.canPick || leagueUserData.isEliminated) {
     return new Response(JSON.stringify({ message: "You cannot make a pick at this time." }), {
       status: 400,
     });
   }
 
   // Fetch the user's previous picks for this league
-  const { data: previousPicks, error: previousPicksError } = await supabase
-    .from("picks")
-    .select("teamName")
-    .eq("user_id", formData.userId)
-    .eq("league_id", parseInt(formData.leagueId));
-
-  if (previousPicksError) {
-    console.error("Error fetching previous picks:", previousPicksError.message);
-    return new Response(JSON.stringify({ message: "Error fetching picks." }), {
-      status: 500,
-    });
-  }
+  const previousPicks = await supabaseClient.getUserPicks(userData.id, formData.leagueId);
 
   // Extract team names from previous picks
   const teamNames = previousPicks.map((pick) => pick.teamName);
@@ -64,23 +50,12 @@ export async function POST(req) {
     });
   }
 
-  // Insert the new pick into the database
-  const { data: newPick, error: insertPickError } = await supabase
-    .from("picks")
-    .insert({
-      user_id: formData.userId,
-      league_id: parseInt(formData.leagueId),
-      teamName: formData.selectedPick.team,
-      date: formData.selectedPick.date,
-    })
-    .select(); // To return the inserted data if necessary
-
-  if (insertPickError) {
-    console.error("Error inserting new pick:", insertPickError.message);
-    return new Response(JSON.stringify({ message: "Error submitting pick." }), {
-      status: 500,
-    });
-  }
+  await supabaseClient.submitPick(
+    userData.id,
+    formData.leagueId,
+    formData.selectedPick.team,
+    formData.selectedPick.date
+  );
 
   // Update the user's canPick status to false
   const { error: updateCanPickError } = await supabase
@@ -95,8 +70,6 @@ export async function POST(req) {
       status: 500,
     });
   }
-
-  console.log("Inserted pick:", newPick);
 
   return new Response(JSON.stringify({ message: "Pick submitted successfully." }), {
     status: 200,
