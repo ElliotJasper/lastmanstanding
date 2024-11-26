@@ -417,6 +417,29 @@ export class SupabaseClient {
     return uploadData;
   }
 
+  async function generateAvatarUrl(userId) {
+    const { data: files, error } = await supabaseClient.storage.from("avatars").list();
+  
+    if (error) {
+      throw new Error(`Error listing files: ${error.message}`);
+    }
+  
+    const possibleExtensions = ["png", "jpg", "jpeg", "gif"];
+    for (const ext of possibleExtensions) {
+      const fileName = `${userId}.${ext}`;
+      const file = files.find((file) => file.name === fileName);
+  
+      if (file) {
+        const { publicUrl } = supabaseClient.storage.from("avatars").getPublicUrl(file.name);
+        return publicUrl;
+      }
+    }
+  
+    // Fallback to a default avatar URL
+    const { publicUrl: defaultAvatarUrl } = supabaseClient.storage.from("avatars").getPublicUrl("default-pfp.jpg");
+    return defaultAvatarUrl;
+  }
+  
   /**
    * Submit a pick for a user in a league
    * @param userId
