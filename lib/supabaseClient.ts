@@ -452,12 +452,7 @@ export class SupabaseClient {
    * @param teamName
    * @param date
    */
-  async submitPick(
-    userId: string,
-    leagueId: number,
-    teamName: string,
-    date: string
-  ): Promise<void> {
+  async submitPick(userId: string, leagueId: number, teamName: string, date: string): Promise<void> {
     const { error: pickError } = await this.client.from("picks").insert({
       user_id: userId,
       league_id: leagueId,
