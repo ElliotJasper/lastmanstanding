@@ -1,4 +1,3 @@
-import { createClient } from "../../../../utils/supabase/server.js";
 import { SupabaseClient } from "../../../../lib/supabaseClient.ts";
 
 export async function POST(req) {
