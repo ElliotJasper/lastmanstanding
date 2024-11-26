@@ -1,7 +1,4 @@
-import {
-  createClient,
-  SupabaseClient as OriginalSupabaseClient,
-} from "../utils/supabase/server.js";
+import { createClient, SupabaseClient as OriginalSupabaseClient } from "../utils/supabase/server.js";
 import { getUniqueLeagueId } from "../lib/utils.js";
 import { DateHandler } from "./dateHandler.ts";
 import { LeagueIdGenerator } from "./leagueIdGenerator.ts";
@@ -215,10 +212,7 @@ export class SupabaseClient {
    * @returns A league with given code if exists
    */
   async getLeagueByCode(code: string): Promise<any> {
-    const { data: league, error: leagueError } = await this.client
-      .from("leagues")
-      .select("id")
-      .eq("code", code);
+    const { data: league, error: leagueError } = await this.client.from("leagues").select("id").eq("code", code);
     if (leagueError) {
       throw new Error(`Error fetching league: ${leagueError.message}`);
     }
@@ -282,10 +276,7 @@ export class SupabaseClient {
    * @param leagueId
    */
   async activateLeague(leagueId: number): Promise<void> {
-    const { error: leagueError } = await this.client
-      .from("leagues")
-      .update({ isactive: true })
-      .eq("id", leagueId);
+    const { error: leagueError } = await this.client.from("leagues").update({ isactive: true }).eq("id", leagueId);
 
     if (leagueError) {
       throw new Error(`Error activating league: ${leagueError.message}`);
@@ -348,9 +339,7 @@ export class SupabaseClient {
 
       if (file) {
         // If file is found, download and return it
-        const { data: avatarData, error: avatarError } = await this.client.storage
-          .from("avatars")
-          .download(file.name);
+        const { data: avatarData, error: avatarError } = await this.client.storage.from("avatars").download(file.name);
 
         if (avatarError) {
           throw new Error(avatarError.message);
@@ -391,9 +380,7 @@ export class SupabaseClient {
 
     // If an existing file is found, delete it
     if (existingFile) {
-      const { error: deleteError } = await this.client.storage
-        .from("avatars")
-        .remove([existingFile.name]);
+      const { error: deleteError } = await this.client.storage.from("avatars").remove([existingFile.name]);
       if (deleteError) {
         throw new Error(`Failed to delete existing avatar: ${deleteError.message}`);
       }
@@ -417,34 +404,6 @@ export class SupabaseClient {
     return uploadData;
   }
 
-  /**
-   * Generates the avatar URL of a user
-   * @param userId 
-   * @returns 
-   */
-  async function generateAvatarUrl(userId: string): Promise<string> {
-    const { data: files, error } = await this.client.storage.from("avatars").list();
-  
-    if (error) {
-      throw new Error(`Error listing files: ${error.message}`);
-    }
-  
-    const possibleExtensions = ["png", "jpg", "jpeg", "gif"];
-    for (const ext of possibleExtensions) {
-      const fileName = `${userId}.${ext}`;
-      const file = files.find((file) => file.name === fileName);
-  
-      if (file) {
-        const { publicUrl } = this.client.storage.from("avatars").getPublicUrl(file.name);
-        return publicUrl;
-      }
-    }
-  
-    // Fallback to a default avatar URL
-    const { publicUrl: defaultAvatarUrl } = this.client.storage.from("avatars").getPublicUrl("default-pfp.jpg");
-    return defaultAvatarUrl;
-  }
-  
   /**
    * Submit a pick for a user in a league
    * @param userId
