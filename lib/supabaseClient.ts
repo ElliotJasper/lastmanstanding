@@ -417,6 +417,13 @@ export class SupabaseClient {
     return uploadData;
   }
 
+  /**
+   * Submit a pick for a user in a league
+   * @param userId
+   * @param leagueId
+   * @param teamName
+   * @param date
+   */
   async submitPick(
     userId: string,
     leagueId: number,
