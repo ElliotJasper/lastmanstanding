@@ -417,4 +417,22 @@ export class SupabaseClient {
     console.log("Upload success:", uploadData);
     return uploadData;
   }
+
+  async submitPick(
+    userId: string,
+    leagueId: number,
+    teamName: string,
+    date: string
+  ): Promise<void> {
+    const { error: pickError } = await this.client.from("picks").insert({
+      user_id: userId,
+      league_id: leagueId,
+      teamName: teamName,
+      date: date,
+    });
+
+    if (pickError) {
+      throw new Error(`Error submitting pick: ${pickError.message}`);
+    }
+  }
 }
