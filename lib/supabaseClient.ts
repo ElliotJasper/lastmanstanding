@@ -435,13 +435,13 @@ export class SupabaseClient {
       const file = files.find((file) => file.name === fileName);
   
       if (file) {
-        const { publicUrl } = supabaseClient.storage.from("avatars").getPublicUrl(file.name);
+        const { publicUrl } = this.client.storage.from("avatars").getPublicUrl(file.name);
         return publicUrl;
       }
     }
   
     // Fallback to a default avatar URL
-    const { publicUrl: defaultAvatarUrl } = supabaseClient.storage.from("avatars").getPublicUrl("default-pfp.jpg");
+    const { publicUrl: defaultAvatarUrl } = this.client.storage.from("avatars").getPublicUrl("default-pfp.jpg");
     return defaultAvatarUrl;
   }
   
