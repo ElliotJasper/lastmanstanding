@@ -8,15 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  Trophy,
-  ArrowRight,
-  Star,
-  AlertCircle,
-  ChevronDown,
-  ChevronUp,
-  PlayCircle,
-} from "lucide-react";
+import { Trophy, ArrowRight, Star, AlertCircle, ChevronDown, ChevronUp, PlayCircle } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import Link from "next/link";
@@ -69,7 +61,7 @@ const getUsers = async (leagueId) => {
     throw new Error("Failed to fetch users");
   }
   const data = await response.json();
-
+  console.log(data);
   return data;
 };
 
@@ -227,9 +219,7 @@ export default function TeamSelectionPage({ params }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">
-        Football Last Man Standing
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           {!leagueInfo.isactive ? (
@@ -238,9 +228,7 @@ export default function TeamSelectionPage({ params }) {
                 <CardTitle className="text-2xl text-[#4a82b0]">Inactive League</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-lg mb-4">
-                  This league needs to be activated before you can start playing.
-                </p>
+                <p className="text-lg mb-4">This league needs to be activated before you can start playing.</p>
                 {leagueInfo.user_id === user.id && (
                   <Button onClick={handleActivate} className="bg-[#4a82b0] hover:bg-[#4a82b0]/90">
                     <PlayCircle className="mr-2 h-4 w-4" /> Activate League
@@ -261,14 +249,12 @@ export default function TeamSelectionPage({ params }) {
                 <div className="space-y-6">
                   <p className="text-xl">You've won the Football Last Man Standing League!</p>
                   <div className="p-6 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg shadow-inner">
-                    <h3 className="font-semibold text-2xl text-[#4a82b0] mb-4">
-                      Gameweeks survived: {gameWeeks}
-                    </h3>
+                    <h3 className="font-semibold text-2xl text-[#4a82b0] mb-4">Gameweeks survived: {gameWeeks}</h3>
                     <ul className="space-y-2 text-lg"></ul>
                   </div>
                   <p className="italic text-xl text-[#4a82b0]">
-                    "The difference between the impossible and the possible lies in a person's
-                    determination." - Tommy Lasorda
+                    "The difference between the impossible and the possible lies in a person's determination." - Tommy
+                    Lasorda
                   </p>
                   <div className="pt-4">
                     <Button className="bg-[#4a82b0] hover:bg-[#4a82b0]/90 text-lg px-6 py-3">
@@ -290,8 +276,7 @@ export default function TeamSelectionPage({ params }) {
               <CardContent className="text-center">
                 <div className="space-y-4">
                   <p className="text-lg">
-                    Unfortunately, you've been eliminated from this league. But don't worry, there's
-                    always next time!
+                    Unfortunately, you've been eliminated from this league. But don't worry, there's always next time!
                   </p>
                   <div className="p-4 bg-gray-100 rounded-lg">
                     <h3 className="font-semibold text-[#4a82b0] mb-2">Your Final Stats</h3>
@@ -331,9 +316,7 @@ export default function TeamSelectionPage({ params }) {
                               <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                                 <Avatar className="h-12 w-12 mb-2">
                                   <AvatarImage src={team.teamImg} alt={team.team} />
-                                  <AvatarFallback className="bg-[#4a82b0] text-white">
-                                    {team.team[0]}
-                                  </AvatarFallback>
+                                  <AvatarFallback className="bg-[#4a82b0] text-white">{team.team[0]}</AvatarFallback>
                                 </Avatar>
                                 <h3 className="font-semibold text-sm">{team.team}</h3>
                                 <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
@@ -377,19 +360,16 @@ export default function TeamSelectionPage({ params }) {
                               onClick={() => toggleUserExpansion(user.id)}
                             >
                               <div className="flex items-center space-x-3">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarFallback className="bg-[#4a82b0] text-white">
-                                    {user.avatar}
-                                  </AvatarFallback>
+                                <Avatar className="h-16 w-16">
+                                  {/* Increase h and w values to make larger */}
+                                  <AvatarImage src={user.avatar_url} className="object-cover" />
                                 </Avatar>
                                 <span className="font-medium">{user.display_name}</span>
                               </div>
                               <div className="flex items-center space-x-2 mr-2">
                                 <Badge
                                   variant={user.isEliminated == false ? "default" : "secondary"}
-                                  className={
-                                    user.isEliminated == false ? "bg-green-500" : "bg-red-500"
-                                  }
+                                  className={user.isEliminated == false ? "bg-green-500" : "bg-red-500"}
                                 >
                                   {user.isEliminated == false ? "Active" : "Eliminated"}
                                 </Badge>
