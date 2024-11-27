@@ -36,8 +36,7 @@ const getAvatar = async (userId) => {
     throw new Error("Failed to fetch user avatar");
   }
 
-  const blob = await response.blob();
-  return URL.createObjectURL(blob); // Convert blob to object URL
+  return response.text();
 };
 
 export default function ProfilePage({ params }) {
@@ -83,9 +82,9 @@ export default function ProfilePage({ params }) {
 
   const getUserAvatar = async () => {
     try {
-      const blobUrl = await getAvatar(params.userId);
-      console.log("Blob URL:", blobUrl);
-      setProfilePicture(blobUrl); // Set blob URL as profile picture
+      const avatarUrl = await getAvatar(params.userId);
+      console.log("Avatar URL:", avatarUrl);
+      setProfilePicture(avatarUrl); // Set URL as profile picture
     } catch (error) {
       console.error(error);
     }
@@ -140,9 +139,7 @@ export default function ProfilePage({ params }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">
-        Football Last Man Standing
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
       <Card className="max-w-2xl mx-auto border-t-4 border-t-[#e01883]">
         <CardHeader>
           <CardTitle className="text-2xl text-[#4a82b0]">Your Profile</CardTitle>
@@ -193,11 +190,7 @@ export default function ProfilePage({ params }) {
                 <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}
-            <Button
-              type="submit"
-              className="w-full bg-[#4a82b0] hover:bg-[#4a82b0]/90"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full bg-[#4a82b0] hover:bg-[#4a82b0]/90" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
