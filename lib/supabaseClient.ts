@@ -338,26 +338,30 @@ export class SupabaseClient {
       const file = data.find((file) => file.name === fileName);
 
       if (file) {
-        // If file is found, download and return it
-        const { data: avatarData, error: avatarError } = await this.client.storage.from("avatars").download(file.name);
+        // If file is found, generate and return its public URL
+        const {
+          data: { publicUrl },
+          error: urlError,
+        } = this.client.storage.from("avatars").getPublicUrl(fileName);
 
-        if (avatarError) {
-          throw new Error(avatarError.message);
+        if (urlError) {
+          throw new Error(urlError.message);
         }
-        return avatarData;
+        return publicUrl;
       }
     }
 
-    // If no file is found, return the default avatar
-    const { data: defaultAvatar, error: defaultAvatarError } = await this.client.storage
-      .from("avatars")
-      .download("default-pfp.jpg");
+    // If no file is found, return the default avatar URL
+    const {
+      data: { publicUrl },
+      error: defaultUrlError,
+    } = this.client.storage.from("avatars").getPublicUrl("default-pfp.jpg");
 
-    if (defaultAvatarError) {
-      throw new Error(defaultAvatarError.message);
+    if (defaultUrlError) {
+      throw new Error(defaultUrlError.message);
     }
 
-    return defaultAvatar;
+    return publicUrl;
   }
 
   /**
