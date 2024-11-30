@@ -360,7 +360,7 @@ export default function TeamSelectionPage({ params }) {
                               onClick={() => toggleUserExpansion(user.id)}
                             >
                               <div className="flex items-center space-x-3">
-                                <Avatar className="h-16 w-16">
+                                <Avatar className="h-12 w-12">
                                   {/* Increase h and w values to make larger */}
                                   <AvatarImage src={user.avatar_url} className="object-cover" />
                                 </Avatar>
