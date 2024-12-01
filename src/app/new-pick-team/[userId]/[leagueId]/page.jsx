@@ -361,7 +361,6 @@ export default function TeamSelectionPage({ params }) {
                             >
                               <div className="flex items-center space-x-3">
                                 <Avatar className="h-12 w-12">
-                                  {/* Increase h and w values to make larger */}
                                   <AvatarImage src={user.avatar_url} className="object-cover" />
                                 </Avatar>
                                 <span className="font-medium">{user.display_name}</span>
