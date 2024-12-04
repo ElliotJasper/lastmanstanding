@@ -295,7 +295,6 @@ export default function TeamSelectionPage({ params }) {
               </CardContent>
             </Card>
           ) : (
-            // Render the "select your team" card
             <Card className="border-t-4 border-t-[#e01883]">
               <CardHeader>
                 <CardTitle className="text-2xl text-[#4a82b0]">Select Your Team</CardTitle>
