@@ -2,7 +2,6 @@ import { SupabaseClient } from "../../../../../lib/supabaseClient.ts";
 
 export async function POST(req, { params }) {
   const { leagueId } = params;
-  console.log("hi");
   const supabaseClient = new SupabaseClient();
 
   const userData = await supabaseClient.getAuthenticatedUser();
@@ -10,6 +9,6 @@ export async function POST(req, { params }) {
     return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
   }
 
-  await supabaseClient.activateLeague(leagueId);
+  await supabaseClient.activateLeague(leagueId, userData.id);
   return new Response({ status: 200 });
 }
