@@ -433,4 +433,24 @@ export class SupabaseClient {
       throw new Error(`Error submitting pick: ${pickError.message}`);
     }
   }
+
+  /**
+   * Check if user is the creator of a league
+   * @param userId
+   * @param leagueId
+   * @returns
+   */
+  async isLeagueCreator(leagueId: number, userId: string): Promise<boolean> {
+    const { data: league, error: leagueError } = await this.serviceClient
+      .from("leagues")
+      .select("user_id")
+      .eq("id", leagueId)
+      .single();
+
+    if (leagueError) {
+      throw new Error(`Error fetching league creator: ${leagueError.message}`);
+    }
+
+    return league.user_id === userId;
+  }
 }
