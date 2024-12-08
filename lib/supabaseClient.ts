@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient as OriginalSupabaseClient } from "../utils/supabase/server.js";
+import { createServiceClient } from "../utils/supabase/server.js";
 import { getUniqueLeagueId } from "../lib/utils.js";
 import { DateHandler } from "./dateHandler.ts";
 import { LeagueIdGenerator } from "./leagueIdGenerator.ts";
@@ -6,10 +7,12 @@ import { LeagueIdGenerator } from "./leagueIdGenerator.ts";
 export class SupabaseClient {
   private client: OriginalSupabaseClient;
   private leagueIdGenerator: LeagueIdGenerator;
+  private serviceClient;
 
   constructor() {
     this.client = createClient();
     this.leagueIdGenerator = new LeagueIdGenerator(this);
+    this.serviceClient = createServiceClient();
   }
 
   /**
@@ -29,7 +32,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - User's leagues
    */
   async getUserLeagues(userId: string): Promise<any> {
-    const { data: leagues, error } = await this.client
+    const { data: leagues, error } = await this.serviceClient
       .from("league_users")
       .select(`leagues (*), isEliminated, canPick, winner`)
       .eq("user_id", userId);
@@ -49,7 +52,7 @@ export class SupabaseClient {
    */
   async createLeague(name: string, userId: string): Promise<any> {
     const code = await this.leagueIdGenerator.getUniqueLeagueId();
-    const { data: createdLeague, error: leagueError } = await this.client
+    const { data: createdLeague, error: leagueError } = await this.serviceClient
       .from("leagues")
       .insert({
         name: name,
@@ -80,7 +83,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - Users of a league
    */
   async getLeagueUsers(leagueId: string): Promise<any> {
-    const { data: leagueUsers, error: leagueUsersError } = await this.client
+    const { data: leagueUsers, error: leagueUsersError } = await this.serviceClient
       .from("league_users")
       .select("user_id, isEliminated")
       .eq("league_id", parseInt(leagueId));
@@ -98,7 +101,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - Users display names
    */
   async getUserDisplayNames(userIds: string[]): Promise<any> {
-    const { data: users, error: usersError } = await this.client
+    const { data: users, error: usersError } = await this.serviceClient
       .from("profiles")
       .select("user_id, display_name")
       .in("user_id", userIds);
@@ -117,7 +120,7 @@ export class SupabaseClient {
   async getPickableGames(): Promise<any> {
     const dates = DateHandler.generateDatesUntilSunday();
 
-    const { data: games, error: picksError } = await this.client
+    const { data: games, error: picksError } = await this.serviceClient
       .from("games")
       .select("homeTeam, awayTeam, date, eventProgress")
       .gt("date", dates[0])
@@ -125,7 +128,8 @@ export class SupabaseClient {
       .order("date", { ascending: true });
 
     if (picksError) {
-      throw new Error(`Error fetching pickable games: ${error.message}`);
+      console.error("Picks Error Details:", picksError);
+      throw new Error(`Error fetching pickable games: ${picksError.message}`);
     }
 
     const gameDetails = games.flatMap((game) => [
@@ -151,7 +155,7 @@ export class SupabaseClient {
   async getPreviousGames(): Promise<any> {
     const dates = DateHandler.generateDatesUntilPreviousSunday();
 
-    const { data: games, error: picksError } = await this.client
+    const { data: games, error: picksError } = await this.serviceClient
       .from("games")
       .select("homeTeam, awayTeam, homeScore, awayScore, date, id, eventProgress")
       .gte("date", dates[dates.length - 1])
@@ -172,7 +176,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - Users picks
    */
   async getUserPicks(userId: string, leagueId: number): Promise<any> {
-    const { data: picks, error: picksError } = await this.client
+    const { data: picks, error: picksError } = await this.serviceClient
       .from("picks")
       .select("teamName, date")
       .eq("user_id", userId)
@@ -192,7 +196,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - Information about the user in the league
    */
   async getLeagueUserData(userId: string, leagueId: number): Promise<any> {
-    const { data: leagueUserData, error: leagueUserDataError } = await this.client
+    const { data: leagueUserData, error: leagueUserDataError } = await this.serviceClient
       .from("league_users")
       .select("isEliminated, winner, canPick")
       .eq("user_id", userId)
@@ -212,7 +216,7 @@ export class SupabaseClient {
    * @returns A league with given code if exists
    */
   async getLeagueByCode(code: string): Promise<any> {
-    const { data: league, error: leagueError } = await this.client.from("leagues").select("id").eq("code", code);
+    const { data: league, error: leagueError } = await this.serviceClient.from("leagues").select("id").eq("code", code);
     if (leagueError) {
       throw new Error(`Error fetching league: ${leagueError.message}`);
     }
@@ -227,7 +231,7 @@ export class SupabaseClient {
    */
   async addUserToLeague(userId: string, leagueId: number): Promise<void> {
     // Check if the league is inactive
-    const { data: league, error: leagueCheckError } = await this.client
+    const { data: league, error: leagueCheckError } = await this.serviceClient
       .from("leagues")
       .select("isactive")
       .eq("id", leagueId)
@@ -242,7 +246,7 @@ export class SupabaseClient {
     }
 
     // Proceed to add user to league
-    const { data: added, error: joinLeagueError } = await this.client.from("league_users").insert({
+    const { data: added, error: joinLeagueError } = await this.serviceClient.from("league_users").insert({
       user_id: userId,
       league_id: leagueId,
     });
@@ -258,7 +262,7 @@ export class SupabaseClient {
    * @returns
    */
   async getLeagueInfo(leagueId: number): Promise<any> {
-    const { data: league, error: leagueError } = await this.client
+    const { data: league, error: leagueError } = await this.serviceClient
       .from("leagues")
       .select("isactive, user_id")
       .eq("id", leagueId)
@@ -295,7 +299,7 @@ export class SupabaseClient {
    * @returns
    */
   async getProfile(userId: string): Promise<any> {
-    const { data: profile, error: profileError } = await this.client
+    const { data: profile, error: profileError } = await this.serviceClient
       .from("profiles")
       .select("display_name")
       .eq("user_id", userId)
@@ -314,7 +318,7 @@ export class SupabaseClient {
    * @param displayName
    */
   async updateProfile(userId: string, displayName: string): Promise<void> {
-    const { error: profileError } = await this.client
+    const { error: profileError } = await this.serviceClient
       .from("profiles")
       .update({ display_name: displayName })
       .eq("user_id", userId);
@@ -331,7 +335,7 @@ export class SupabaseClient {
    */
   async downloadAvatar(userId: string) {
     // List all files in the "avatars" bucket
-    const { data, error } = await this.client.storage.from("avatars").list();
+    const { data, error } = await this.serviceClient.storage.from("avatars").list();
 
     if (error) {
       throw new Error(error.message);
@@ -348,7 +352,7 @@ export class SupabaseClient {
         const {
           data: { publicUrl },
           error: urlError,
-        } = this.client.storage.from("avatars").getPublicUrl(fileName);
+        } = this.serviceClient.storage.from("avatars").getPublicUrl(fileName);
 
         if (urlError) {
           throw new Error(urlError.message);
@@ -361,7 +365,7 @@ export class SupabaseClient {
     const {
       data: { publicUrl },
       error: defaultUrlError,
-    } = this.client.storage.from("avatars").getPublicUrl("default-pfp.jpg");
+    } = this.serviceClient.storage.from("avatars").getPublicUrl("default-pfp.jpg");
 
     if (defaultUrlError) {
       throw new Error(defaultUrlError.message);
@@ -379,7 +383,7 @@ export class SupabaseClient {
    */
   async uploadAvatar(userId: string, fileBuffer: Buffer, mimeType: string) {
     // List all files in the "avatars" bucket
-    const { data: listData, error: listError } = await this.client.storage.from("avatars").list();
+    const { data: listData, error: listError } = await this.serviceClient.storage.from("avatars").list();
 
     if (listError) {
       throw new Error(`Failed to list files: ${listError.message}`);
@@ -390,7 +394,7 @@ export class SupabaseClient {
 
     // If an existing file is found, delete it
     if (existingFile) {
-      const { error: deleteError } = await this.client.storage.from("avatars").remove([existingFile.name]);
+      const { error: deleteError } = await this.serviceClient.storage.from("avatars").remove([existingFile.name]);
       if (deleteError) {
         throw new Error(`Failed to delete existing avatar: ${deleteError.message}`);
       }
@@ -401,7 +405,7 @@ export class SupabaseClient {
     const newFilePath = `${userId}`;
 
     // Upload the new avatar
-    const { data: uploadData, error: uploadError } = await this.client.storage
+    const { data: uploadData, error: uploadError } = await this.serviceClient.storage
       .from("avatars")
       .upload(newFilePath, fileBuffer, {
         contentType: mimeType,
@@ -422,7 +426,7 @@ export class SupabaseClient {
    * @param date
    */
   async submitPick(userId: string, leagueId: number, teamName: string, date: string): Promise<void> {
-    const { error: pickError } = await this.client.from("picks").insert({
+    const { error: pickError } = await this.serviceClient.from("picks").insert({
       user_id: userId,
       league_id: leagueId,
       teamName: teamName,
