@@ -65,7 +65,7 @@ export class SupabaseClient {
       throw new Error(`Error creating league: ${leagueError.message}`);
     }
 
-    const { error: userLeagueError } = await this.client.from("league_users").insert({
+    const { error: userLeagueError } = await this.serviceClient.from("league_users").insert({
       user_id: userId,
       league_id: createdLeague[0].id,
     });
