@@ -275,11 +275,17 @@ export class SupabaseClient {
    * Set the league as active
    * @param leagueId
    */
-  async activateLeague(leagueId: number): Promise<void> {
-    const { error: leagueError } = await this.client.from("leagues").update({ isactive: true }).eq("id", leagueId);
-
-    if (leagueError) {
-      throw new Error(`Error activating league: ${leagueError.message}`);
+  async activateLeague(leagueId: number, clientId: number): Promise<void> {
+    if (this.isLeagueCreator(leagueId, clientId)) {
+      const { error: leagueError } = await this.serviceClient
+        .from("leagues")
+        .update({ isactive: true })
+        .eq("id", leagueId);
+      if (leagueError) {
+        throw new Error(`Error activating league: ${leagueError.message}`);
+      }
+    } else {
+      throw new Error("You are not the creator of this league");
     }
   }
 
