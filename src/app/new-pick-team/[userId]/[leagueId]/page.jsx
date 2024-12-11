@@ -222,21 +222,7 @@ export default function TeamSelectionPage({ params }) {
       <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          {!leagueInfo.isactive ? (
-            <Card className="border-t-4 border-t-[#e01883]">
-              <CardHeader>
-                <CardTitle className="text-2xl text-[#4a82b0]">Inactive League</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-lg mb-4">This league needs to be activated before you can start playing.</p>
-                {leagueInfo.user_id === user.id && (
-                  <Button onClick={handleActivate} className="bg-[#4a82b0] hover:bg-[#4a82b0]/90">
-                    <PlayCircle className="mr-2 h-4 w-4" /> Activate League
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ) : winner ? (
+          {winner ? (
             // Render the "winner" card
             <Card className="border-t-4 border-t-[#e01883]">
               <CardHeader>
@@ -292,6 +278,20 @@ export default function TeamSelectionPage({ params }) {
                     </Link>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          ) : !leagueInfo.isactive ? (
+            <Card className="border-t-4 border-t-[#e01883]">
+              <CardHeader>
+                <CardTitle className="text-2xl text-[#4a82b0]">Inactive League</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-lg mb-4">This league needs to be activated before you can start playing.</p>
+                {leagueInfo.user_id === user.id && (
+                  <Button onClick={handleActivate} className="bg-[#4a82b0] hover:bg-[#4a82b0]/90">
+                    <PlayCircle className="mr-2 h-4 w-4" /> Activate League
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ) : (
