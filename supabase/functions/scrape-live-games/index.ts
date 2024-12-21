@@ -4,6 +4,34 @@
 
 import { createClient } from "jsr:@supabase/supabase-js";
 
+function isBeforeThursdayMidnight() {
+  // Get the current date and time
+  const now = new Date();
+
+  // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const dayOfWeek = now.getDay();
+
+  // Get the current year, month, and date
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed
+  const date = now.getDate();
+
+  // Calculate the upcoming Thursday midnight
+  let thursdayMidnight;
+  if (dayOfWeek <= 4) {
+    // If today is Sunday (0) to Thursday (4)
+    thursdayMidnight = new Date(year, month, date + (4 - dayOfWeek) + 1);
+  } else {
+    // If today is Friday (5) or Saturday (6), move to next week's Thursday
+    thursdayMidnight = new Date(year, month, date + (11 - dayOfWeek));
+  }
+  // Set the time for Thursday midnight (start of Friday)
+  thursdayMidnight.setHours(0, 0, 0, 0);
+
+  // Return true if the current time is before Thursday midnight
+  return now < thursdayMidnight;
+}
+
 const generateFormattedDatesUntilSunday = () => {
   const formattedDates = [];
   const date_ob = new Date();
@@ -46,10 +74,7 @@ const generateFormattedDatesUntilSunday = () => {
 };
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 async function scrapeTodaysScores() {
   let games = [];
@@ -124,13 +149,15 @@ async function saveScoresToDatabase(scores) {
 
     if (existingGame) {
       if (existingGame.eventProgress !== "PostEvent" && score.eventProgress === "PostEvent") {
-        console.log(
-          "PostEvent detected, calling TestFunction for:",
-          score.homeTeam,
-          "vs",
-          score.awayTeam
-        );
+        console.log("PostEvent detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
         TestFunction(score);
+      }
+    }
+
+    if (existingGame) {
+      if (existingGame.eventProgress !== "Postponed" && score.eventProgress === "Postponed") {
+        console.log("Postponed detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
+        EliminateFunction(score);
       }
     }
   });
@@ -150,7 +177,7 @@ async function saveScoresToDatabase(scores) {
       updated_at: new Date(),
     })),
     {
-      onConflict: ["date", "homeTeam", "awayTeam"], // Specify the unique constraint columns
+      onConflict: ["date", "homeTeam", "awayTeam"],
     }
   );
 
@@ -161,10 +188,107 @@ async function saveScoresToDatabase(scores) {
   }
 }
 
-async function TestFunction(score) {
-  const scoreDate = new Date(score.date).toISOString().slice(0, -5);
+async function EliminateFunction(score) {
+  let isBeforeThursdayMidnight = isBeforeThursdayMidnight();
+  const scoreDate = new Date(score.date).toISOString();
 
-  // Function to update users based on team picks
+  if (isBeforeThursdayMidnight) {
+    // Fetch the picks to be deleted for the home team
+    const { data: homePicksToDelete, error: homePicksFetchError } = await supabase
+      .from("picks")
+      .select("league_id, user_id")
+      .eq("teamName", score.homeTeam)
+      .eq("date", score.date);
+
+    // Fetch the picks to be deleted for the away team
+    const { data: awayPicksToDelete, error: awayPicksFetchError } = await supabase
+      .from("picks")
+      .select("league_id, user_id")
+      .eq("teamName", score.awayTeam)
+      .eq("date", score.date);
+
+    // Reset can_pick for users who had picks for home team
+    if (homePicksToDelete && homePicksToDelete.length > 0) {
+      const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
+        const { error: updateError } = await supabase
+          .from("league_users")
+          .update({ canPick: true })
+          .eq("user_id", pick.user_id)
+          .eq("league_id", pick.league_id);
+
+        if (updateError) {
+          console.error(`Error updating can_pick for home team pick:`, updateError);
+        }
+      });
+
+      await Promise.all(homeUserUpdatePromises);
+    }
+
+    // Reset can_pick for users who had picks for away team
+    if (awayPicksToDelete && awayPicksToDelete.length > 0) {
+      const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
+        const { error: updateError } = await supabase
+          .from("league_users")
+          .update({ canPick: true })
+          .eq("user_id", pick.user_id)
+          .eq("league_id", pick.league_id);
+
+        if (updateError) {
+          console.error(`Error updating can_pick for away team pick:`, updateError);
+        }
+      });
+
+      await Promise.all(awayUserUpdatePromises);
+    }
+
+    // Delete picks for the home team with the old date
+    const { error: deleteHomePicksError } = await supabase
+      .from("picks")
+      .delete()
+      .eq("teamName", score.homeTeam)
+      .eq("date", score.date);
+
+    // Delete picks for the away team with the old date
+    const { error: deleteAwayPicksError } = await supabase
+      .from("picks")
+      .delete()
+      .eq("teamName", score.awayTeam)
+      .eq("date", score.date);
+
+    if (deleteHomePicksError) {
+      console.error(`Error deleting picks for home team ${score.homeTeam}:`, deleteHomePicksError);
+    }
+
+    if (deleteAwayPicksError) {
+      console.error(`Error deleting picks for away team ${score.awayTeam}:`, deleteAwayPicksError);
+    }
+  } else {
+    // Set isEliminated to true for users who picked the home team
+    const { error: updateHomeUsersError } = await supabase
+      .from("league_users")
+      .update({ isEliminated: true, canPick: false })
+      .eq("teamName", score.homeTeam)
+      .eq("date", score.date);
+
+    // Set isEliminated to true for users who picked the away team
+    const { error: updateAwayUsersError } = await supabase
+      .from("league_users")
+      .update({ isEliminated: true, canPick: false })
+      .eq("teamName", score.awayTeam)
+      .eq("date", score.date);
+
+    if (updateHomeUsersError) {
+      console.error(`Error updating league_users for home team ${score.homeTeam}:`, updateHomeUsersError);
+    }
+    if (updateAwayUsersError) {
+      console.error(`Error updating league_users for away team ${score.awayTeam}:`, updateAwayUsersError);
+    }
+  }
+}
+
+async function TestFunction(score) {
+  const scoreDate = new Date(score.date).toISOString();
+  console.log(score);
   async function updateEliminationsForTeam(teamName, teamOutcome) {
     if (teamOutcome !== "win") {
       // Find all users who picked the team (either home or away) based on teamName and date
@@ -173,7 +297,7 @@ async function TestFunction(score) {
         .select("user_id, league_id")
         .eq("teamName", teamName) // Match the team name
         .eq("date", scoreDate); // Match the date
-
+      console.log("USERS", users);
       if (fetchError) {
         console.error(`Error fetching users who picked ${teamName}:`, fetchError);
         return;
@@ -205,9 +329,7 @@ async function TestFunction(score) {
             updateError
           );
         } else {
-          console.log(
-            `User ${user.user_id} in league ${user.league_id} has been eliminated for picking ${teamName}.`
-          );
+          console.log(`User ${user.user_id} in league ${user.league_id} has been eliminated for picking ${teamName}.`);
         }
       });
 

@@ -1,18 +1,12 @@
 import { createClient } from "jsr:@supabase/supabase-js";
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 // Helper function to mark the last standing user as the winner
 async function markLastUserAsWinner() {
   // Query all active leagues
-  const { data: leagues, error: leaguesError } = await supabase
-    .from("leagues")
-    .select("id")
-    .eq("isactive", true);
+  const { data: leagues, error: leaguesError } = await supabase.from("leagues").select("id").eq("isactive", true);
 
   if (leaguesError) {
     console.error("Error fetching leagues:", leaguesError);
