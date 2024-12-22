@@ -436,6 +436,17 @@ export class SupabaseClient {
     if (pickError) {
       throw new Error(`Error submitting pick: ${pickError.message}`);
     }
+
+    // Update the "league_users" table to set "canpick" to false for the given user_id and league_id
+    const { error: updateError } = await this.serviceClient
+      .from("league_users")
+      .update({ canPick: false })
+      .eq("user_id", userId)
+      .eq("league_id", leagueId);
+
+    if (updateError) {
+      throw new Error(`Error updating canpick: ${updateError.message}`);
+    }
   }
 
   /**
