@@ -184,36 +184,29 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-[#4a82b0] text-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Football Last Man Standing</h1>
-          <nav>
-            {user && user.id && (
-              <Button variant="ghost" asChild className="text-white hover:text-[#e01883]">
-                <Link href={`/profile/${user.id}`}>Profile</Link>
+    <div className="min-h-screen bg-background w-full">
+      <header className="w-full">
+        <nav className="flex flex-col sm:flex-row justify-between items-center w-full bg-[#4a82b0]">
+          <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
+            Football Last Man Standing
+          </Link>
+          <div className="flex space-x-4">
+            <Link href="/login">
+              <Button variant="ghost" className="text-white hover:text-[#e01883] hover:bg-white/10">
+                Login
               </Button>
-            )}
-
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              asChild
-              className="text-white hover:text-[#e01883] hover:cursor-pointer"
-            >
-              <span>Logout</span>
-            </Button>
-          </nav>
-        </div>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">Sign Up</Button>
+            </Link>
+          </div>
+        </nav>
       </header>
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
           <section aria-labelledby="leagues-title">
             <div className="flex justify-between items-center mb-4">
-              <h2
-                id="leagues-title"
-                className="text-xl font-semibold text-[#4a82b0] dark:text-[#7ab3e0]"
-              >
+              <h2 id="leagues-title" className="text-xl font-semibold text-[#4a82b0] dark:text-[#7ab3e0]">
                 Your Leagues
               </h2>
               <div className="space-x-2">
@@ -280,19 +273,12 @@ export default function HomePage() {
                     {leagues.map((league) => (
                       <li key={league.leagues.id}>
                         <Card>
-                          <Link
-                            href={`/new-pick-team/${user.id}/${league.leagues.id}`}
-                            className="cursor-pointer"
-                          >
+                          <Link href={`/new-pick-team/${user.id}/${league.leagues.id}`} className="cursor-pointer">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                              <CardTitle className="text-sm font-medium">
-                                {league.leagues.name}
-                              </CardTitle>
+                              <CardTitle className="text-sm font-medium">{league.leagues.name}</CardTitle>
                               <div className="flex flex-col gap-2">
                                 {league.winner && (
-                                  <Badge className="bg-[#4CAF50] flex items-center justify-center">
-                                    {"Winner"}
-                                  </Badge>
+                                  <Badge className="bg-[#4CAF50] flex items-center justify-center">{"Winner"}</Badge>
                                 )}
                                 {league.isEliminated && (
                                   <Badge className="bg-[#FF0000] flex items-center justify-center">
@@ -300,25 +286,17 @@ export default function HomePage() {
                                   </Badge>
                                 )}
                                 {league.leagues.isactive && (
-                                  <Badge className="bg-[#4a82b0] flex items-center justify-center">
-                                    {"Active"}
-                                  </Badge>
+                                  <Badge className="bg-[#4a82b0] flex items-center justify-center">{"Active"}</Badge>
                                 )}
                                 {!league.isEliminated && league.canPick && (
-                                  <Badge className="bg-[#FFA500] flex items-center justify-center">
-                                    {"Pick"}
-                                  </Badge>
+                                  <Badge className="bg-[#FFA500] flex items-center justify-center">{"Pick"}</Badge>
                                 )}
                               </div>
                             </CardHeader>
                             <CardContent>
                               <div className="flex gap-8">
-                                <div className="text-sm text-muted-foreground">
-                                  {league.members} members
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  code: {league.leagues.code}
-                                </div>
+                                <div className="text-sm text-muted-foreground">{league.members} members</div>
+                                <div className="text-sm text-muted-foreground">code: {league.leagues.code}</div>
                               </div>
                             </CardContent>
                           </Link>
@@ -374,9 +352,7 @@ export default function HomePage() {
                         </div>
                         <div className="w-[20%] text-center px-2">
                           <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                            {match.score === "Upcoming"
-                              ? match.date
-                              : match.homeScore + " - " + match.awayScore}
+                            {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
                           </span>
                         </div>
                         <div className="w-[40%] flex items-center space-x-2">
@@ -403,9 +379,7 @@ export default function HomePage() {
                           </div>
                           <div className="w-[20%] text-center px-2">
                             <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                              {match.score === "Upcoming"
-                                ? match.date
-                                : match.homeScore + " - " + match.awayScore}
+                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
                             </span>
                           </div>
                           <div className="w-[40%] flex items-center space-x-2">
@@ -432,9 +406,7 @@ export default function HomePage() {
                           </div>
                           <div className="w-[20%] text-center px-2">
                             <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                              {match.score === "Upcoming"
-                                ? match.date
-                                : match.homeScore + " - " + match.awayScore}
+                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
                             </span>
                           </div>
                           <div className="w-[40%] flex items-center space-x-2">

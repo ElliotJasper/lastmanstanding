@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "../../../../utils/supabase/client";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -138,9 +139,25 @@ export default function ProfilePage({ params }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
-      <Card className="max-w-2xl mx-auto border-t-4 border-t-[#e01883]">
+    <div className="mx-auto">
+      <header className="w-full">
+        <nav className="flex flex-col sm:flex-row justify-between items-center w-full bg-[#4a82b0]">
+          <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
+            Football Last Man Standing
+          </Link>
+          <div className="flex space-x-4">
+            <Link href="/login">
+              <Button variant="ghost" className="text-white hover:text-[#e01883] hover:bg-white/10">
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">Sign Up</Button>
+            </Link>
+          </div>
+        </nav>
+      </header>
+      <Card className="max-w-2xl mx-auto border-t-4 border-t-[#e01883] mt-8">
         <CardHeader>
           <CardTitle className="text-2xl text-[#4a82b0]">Your Profile</CardTitle>
         </CardHeader>
