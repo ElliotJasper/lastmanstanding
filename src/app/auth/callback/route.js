@@ -11,7 +11,6 @@ export async function GET(request) {
     const next = searchParams.get("next") ?? "/";
     const isLocalEnv = process.env.NODE_ENV === "development";
 
-    console.log("BEFORE CODE");
     if (!code) {
       console.error("No code provided in callback");
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/auth-code-error`);
@@ -19,7 +18,6 @@ export async function GET(request) {
 
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("EXCHANGED CODE MAYBE", data);
 
     if (error) {
       console.error("Error exchanging code for session:", error);
@@ -43,7 +41,6 @@ export async function GET(request) {
       baseUrl = `https://${request.headers.get("host")}`;
     }
 
-    console.log("BASE URL:", baseUrl);
     return NextResponse.redirect(`${baseUrl}${next}`);
   } catch (error) {
     console.error("Unexpected error in callback:", error);
