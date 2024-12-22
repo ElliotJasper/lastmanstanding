@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trophy, Users, Calendar, ArrowRight } from "lucide-react";
-import Navbar from "@/components/custom/navbar";
+import Navbar from "@/components/custom/Navbar";
 
 export default function LandingPage() {
   const [email, setEmail] = useState("");

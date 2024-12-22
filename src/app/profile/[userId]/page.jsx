@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Navbar from "@/components/custom/navbar";
+import Navbar from "@/components/custom/Navbar";
 
 const getUserInfo = async (userId) => {
   const response = await fetch(`/api/get-user-info/${userId}`, {
