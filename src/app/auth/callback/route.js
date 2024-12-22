@@ -25,14 +25,7 @@ export async function GET(request) {
     const forwardedHost = request.headers.get("x-forwarded-host");
     const host = request.headers.get("host");
 
-    let baseUrl;
-    if (process.env.NEXT_PUBLIC_SITE_URL) {
-      baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    } else if (process.env.NODE_ENV === "development") {
-      baseUrl = origin;
-    } else {
-      baseUrl = forwardedHost ? `https://${forwardedHost}` : `https://${host}`;
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://${request.headers.get("host")}`;
 
     const redirectUrl = `${baseUrl}${next}`;
     return NextResponse.redirect(redirectUrl);
