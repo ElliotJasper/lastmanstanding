@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Navbar from "@/components/custom/navbar";
 
 const getUserInfo = async (userId) => {
   const response = await fetch(`/api/get-user-info/${userId}`, {
@@ -140,23 +141,7 @@ export default function ProfilePage({ params }) {
 
   return (
     <div className="mx-auto">
-      <header className="w-full">
-        <nav className="flex flex-col sm:flex-row justify-between items-center w-full bg-[#4a82b0]">
-          <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
-            Football Last Man Standing
-          </Link>
-          <div className="flex space-x-4">
-            <Link href="/login">
-              <Button variant="ghost" className="text-white hover:text-[#e01883] hover:bg-white/10">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">Sign Up</Button>
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
       <Card className="max-w-2xl mx-auto border-t-4 border-t-[#e01883] mt-8">
         <CardHeader>
           <CardTitle className="text-2xl text-[#4a82b0]">Your Profile</CardTitle>

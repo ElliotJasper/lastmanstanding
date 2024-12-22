@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trophy, Users, Calendar, ArrowRight } from "lucide-react";
+import Navbar from "@/components/custom/navbar";
 
 export default function LandingPage() {
   const [email, setEmail] = useState("");
@@ -20,23 +21,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#4a82b0] to-[#2c5282]">
-      <header className="container mx-auto px-4 py-6">
-        <nav className="flex flex-col sm:flex-row justify-between items-center w-full">
-          <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
-            Football Last Man Standing
-          </Link>
-          <div className="flex space-x-4">
-            <Link href="/login">
-              <Button variant="ghost" className="text-white hover:text-[#e01883] hover:bg-white/10">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">Sign Up</Button>
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 py-16">
         <motion.div

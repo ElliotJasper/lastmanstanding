@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Navbar from "@/components/custom/Navbar";
 
 const getUserLeagues = async (userId) => {
   const response = await fetch(`/api/get-all-leagues`, {
@@ -185,23 +186,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background w-full">
-      <header className="w-full">
-        <nav className="flex flex-col sm:flex-row justify-between items-center w-full bg-[#4a82b0]">
-          <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
-            Football Last Man Standing
-          </Link>
-          <div className="flex space-x-4">
-            <Link href="/login">
-              <Button variant="ghost" className="text-white hover:text-[#e01883] hover:bg-white/10">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">Sign Up</Button>
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
           <section aria-labelledby="leagues-title">
