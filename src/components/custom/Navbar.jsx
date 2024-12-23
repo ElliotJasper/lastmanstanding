@@ -9,6 +9,17 @@ const Navbar = () => {
   const [user, setUser] = useState(null); // State to hold the user
   const [loading, setLoading] = useState(true); // State to track loading state
 
+  const handleLogout = async () => {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    } else {
+      // Redirect to home or login page after logout
+      window.location.href = "/login";
+    }
+  };
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -44,9 +55,14 @@ const Navbar = () => {
         <div className="flex space-x-4">
           {user ? (
             // If a user is logged in, show the profile link
-            <Link href={`/profile/${user.id}`}>
-              <Button className="bg-[#4a82b0] hover:bg-[#3b74a2] text-white">Profile</Button>
-            </Link>
+            <>
+              <Link href={`/profile/${user.id}`}>
+                <Button className="bg-[#4a82b0] hover:bg-[#3b74a2] text-white">Profile</Button>
+              </Link>
+              <Button onClick={handleLogout} className="bg-[#e01883] hover:bg-[#d0177a] text-white">
+                Logout
+              </Button>
+            </>
           ) : (
             // Otherwise, show the login and signup buttons
             <>
