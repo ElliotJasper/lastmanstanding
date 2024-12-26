@@ -127,7 +127,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="container mx-auto px-4 py-8 text-center text-white/60">
-        <p>&copy; 2023 Football Last Man Standing. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Football Last Man Standing. All rights reserved.</p>
       </footer>
     </div>
   );
