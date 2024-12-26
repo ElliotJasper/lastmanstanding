@@ -1,11 +1,10 @@
-import { createClient, SupabaseClient as OriginalSupabaseClient } from "../utils/supabase/server.js";
+import { createClient} from "../utils/supabase/server.js";
 import { createServiceClient } from "../utils/supabase/server.js";
-import { getUniqueLeagueId } from "../lib/utils.js";
-import { DateHandler } from "./dateHandler.ts";
-import { LeagueIdGenerator } from "./leagueIdGenerator.ts";
+import { DateHandler } from "./dateHandler";
+import { LeagueIdGenerator } from "./leagueIdGenerator";
 
 export class SupabaseClient {
-  private client: OriginalSupabaseClient;
+  private client;
   private leagueIdGenerator: LeagueIdGenerator;
   private serviceClient;
 
@@ -126,7 +125,7 @@ export class SupabaseClient {
       .gt("date", dates[0])
       .lte("date", dates[dates.length - 1])
       .order("date", { ascending: true });
-
+      
     if (picksError) {
       console.error("Picks Error Details:", picksError);
       throw new Error(`Error fetching pickable games: ${picksError.message}`);
@@ -163,7 +162,7 @@ export class SupabaseClient {
       .order("date", { ascending: true });
 
     if (picksError) {
-      throw new Error(`Error fetching previous games: ${error.message}`);
+      throw new Error(`Error fetching previous games: ${picksError.message}`);
     }
 
     return games;
@@ -279,7 +278,7 @@ export class SupabaseClient {
    * Set the league as active
    * @param leagueId
    */
-  async activateLeague(leagueId: number, clientId: number): Promise<void> {
+  async activateLeague(leagueId: number, clientId: string): Promise<void> {
     if (this.isLeagueCreator(leagueId, clientId)) {
       const { error: leagueError } = await this.serviceClient
         .from("leagues")
