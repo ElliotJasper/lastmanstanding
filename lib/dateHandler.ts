@@ -6,17 +6,19 @@ export class DateHandler {
   static generateDatesUntilSunday(): string[] {
     const formattedDates: string[] = [];
     const dateObj = new Date();
-    const currentDay = dateObj.getDay();
-    const daysUntilSunday = 8 - currentDay;
-
-    for (let i = 0; i < daysUntilSunday; i++) {
-      const newDate = new Date(dateObj);
-      newDate.setDate(dateObj.getDate() + i);
-      formattedDates.push(newDate.toISOString());
-    }
-
+    
+    // Start from current time for today's games
+    formattedDates.push(dateObj.toISOString());
+    
+    // End of Sunday
+    const endDate = new Date(dateObj);
+    const daysUntilSunday = 7 - endDate.getDay();
+    endDate.setDate(endDate.getDate() + daysUntilSunday);
+    endDate.setHours(23, 59, 59, 999);
+    formattedDates.push(endDate.toISOString());
+    console.log(formattedDates)
     return formattedDates;
-  }
+   }
 
   /**
    * Generates an array of dates from today until the previous Sunday
