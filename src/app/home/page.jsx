@@ -102,9 +102,10 @@ export default function HomePage() {
     const allDates = dates;
     const currentIndex = allDates.findIndex((date) => date.toDateString() === selectedDate.toDateString());
 
-    // Show 3 dates on mobile, 7 on desktop
-    const mobileView = window.innerWidth < 640;
-    const visibleCount = mobileView ? 4 : 7;
+    // Use a safe check for window
+    const isMobileView = typeof window !== "undefined" && window.innerWidth < 640;
+
+    const visibleCount = isMobileView ? 4 : 7;
     const start = Math.max(0, currentIndex - Math.floor(visibleCount / 2));
     return allDates.slice(start, start + visibleCount);
   };
