@@ -98,6 +98,17 @@ export default function HomePage() {
   const [leagueName, setLeagueName] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  const getVisibleDates = () => {
+    const allDates = dates;
+    const currentIndex = allDates.findIndex((date) => date.toDateString() === selectedDate.toDateString());
+
+    // Show 3 dates on mobile, 7 on desktop
+    const mobileView = window.innerWidth < 640;
+    const visibleCount = mobileView ? 4 : 7;
+    const start = Math.max(0, currentIndex - Math.floor(visibleCount / 2));
+    return allDates.slice(start, start + visibleCount);
+  };
+
   const navigateDate = (direction) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(selectedDate.getDate() + (direction === "left" ? -1 : 1));
@@ -333,63 +344,79 @@ export default function HomePage() {
           <div className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold flex items-center justify-between">
+                <CardTitle className="text-base sm:text-lg font-semibold flex items-center justify-between">
                   <span className="text-[#4a82b0]">Fixtures & Results</span>
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => navigateDate("left")}>
+              <CardContent className="w-full max-w-full">
+                <div className="flex items-center justify-between w-full">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex-shrink-0 p-1 sm:p-2"
+                    onClick={() => navigateDate("left")}
+                  >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
 
-                  <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex gap-2">
-                      {dates.map((date, i) => (
-                        <Button
-                          key={i}
-                          variant={date.toDateString() === selectedDate.toDateString() ? "default" : "outline"}
-                          className={`flex-shrink-0 w-16 mb-4 ${
-                            date.toDateString() === selectedDate.toDateString() ? "bg-[#e01883] text-white" : ""
-                          }`}
-                          onClick={() => setSelectedDate(date)}
-                        >
-                          <div className="flex flex-col items-center">
-                            <span className="text-xs">{date.toLocaleDateString("en-US", { weekday: "short" })}</span>
-                            <span className="text-sm font-bold">{date.getDate()}</span>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
+                  <div className="flex-grow mx-2 sm:mx-4 max-w-full overflow-hidden">
+                    <ScrollArea className="w-full max-w-full">
+                      <div className="flex justify-center gap-1 sm:gap-2 flex-wrap">
+                        {getVisibleDates().map((date, i) => (
+                          <Button
+                            key={i}
+                            variant={date.toDateString() === selectedDate.toDateString() ? "default" : "outline"}
+                            className={`flex-shrink-0 min-w-[3rem] sm:min-w-[4rem] mb-4 ${
+                              date.toDateString() === selectedDate.toDateString() ? "bg-[#e01883] text-white" : ""
+                            }`}
+                            onClick={() => setSelectedDate(date)}
+                          >
+                            <div className="flex flex-col items-center">
+                              <span className="text-[10px] sm:text-xs">
+                                {date.toLocaleDateString("en-US", { weekday: "short" })}
+                              </span>
+                              <span className="text-xs sm:text-sm font-bold">{date.getDate()}</span>
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                      <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                  </div>
 
-                  <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => navigateDate("right")}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex-shrink-0 p-1 sm:p-2"
+                    onClick={() => navigateDate("right")}
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
 
-                {/* Rest of your matches display code remains the same */}
-                <div className="mt-4 space-y-3">
+                {/* Matches section */}
+                <div className="mt-4 space-y-2 sm:space-y-3">
                   {getMatchesForSelectedDate().map((match, index) => (
-                    <div key={index} className="p-3 bg-muted/50 rounded-lg">
-                      <div className="flex justify-between items-center text-sm">
-                        <div className="w-[40%] flex items-center justify-end space-x-2">
-                          <span className="text-sm">{match.homeTeam}</span>
-                          <Avatar className="h-10 w-10">
+                    <div key={index} className="p-2 sm:p-3 bg-muted/50 rounded-lg max-w-full overflow-hidden">
+                      <div className="flex justify-between items-center text-xs sm:text-sm">
+                        <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2 truncate">
+                          <span className="truncate">{match.homeTeam}</span>
+                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                             <AvatarImage src={match.homeImg} alt={match.homeTeam} />
                             <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
                           </Avatar>
                         </div>
-                        <div className="w-[20%] text-center px-2 flex flex-col items-center">
+                        <div className="flex-[1] text-center flex flex-col items-center">
                           <div>
-                            <span className="font-semibold text-[#e01883] whitespace-nowrap">
+                            <span className="font-semibold text-[#e01883] text-xs sm:text-sm">
                               {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
                             </span>
-                            <span className="text-xs text-muted-foreground ml-2">{getMatchStatus(match)}</span>
+                            <span className="text-[10px] sm:text-xs text-muted-foreground ml-1 sm:ml-2">
+                              {getMatchStatus(match)}
+                            </span>
                           </div>
-                          <div className="text-center text-xs text-muted-foreground mt-1">
+                          <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                             {new Date(match.date).toLocaleTimeString("en-US", {
                               hour: "2-digit",
                               minute: "2-digit",
@@ -397,18 +424,20 @@ export default function HomePage() {
                             })}
                           </div>
                         </div>
-                        <div className="w-[40%] flex items-center space-x-2">
-                          <Avatar className="h-10 w-10">
+                        <div className="flex-[2] flex items-center gap-1 sm:gap-2 truncate">
+                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                             <AvatarImage src={match.awayImg} alt={match.awayTeam} />
                             <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
                           </Avatar>
-                          <span className="text-sm">{match.awayTeam}</span>
+                          <span className="truncate">{match.awayTeam}</span>
                         </div>
                       </div>
                     </div>
                   ))}
                   {getMatchesForSelectedDate().length === 0 && (
-                    <div className="text-center text-muted-foreground py-8">No matches scheduled for this date</div>
+                    <div className="text-center text-muted-foreground py-6 sm:py-8 text-sm">
+                      No matches scheduled for this date
+                    </div>
                   )}
                 </div>
               </CardContent>
