@@ -350,7 +350,7 @@ export default function HomePage() {
                         <Button
                           key={i}
                           variant={date.toDateString() === selectedDate.toDateString() ? "default" : "outline"}
-                          className={`flex-shrink-0 w-16 ${
+                          className={`flex-shrink-0 w-16 mb-4 ${
                             date.toDateString() === selectedDate.toDateString() ? "bg-[#e01883] text-white" : ""
                           }`}
                           onClick={() => setSelectedDate(date)}
