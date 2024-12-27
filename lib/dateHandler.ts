@@ -27,10 +27,13 @@ export class DateHandler {
   static generateDatesUntilPreviousSunday(): string[] {
     const formattedDates: string[] = [];
     const dateObj = new Date();
+  
+    // Calculate days since the last Sunday
     const currentDay = dateObj.getDay();
     const daysSinceSunday = currentDay === 0 ? 8 : currentDay + 2;
-
-    for (let i = 0; i < daysSinceSunday; i++) {
+  
+    // Generate dates up to the previous Sunday
+    for (let i = daysSinceSunday - 1; i >= 0; i--) {
       const newDate = new Date(dateObj);
       newDate.setDate(dateObj.getDate() - i);
       formattedDates.push(newDate.toISOString());
