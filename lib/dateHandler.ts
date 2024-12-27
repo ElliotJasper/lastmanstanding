@@ -38,7 +38,17 @@ export class DateHandler {
       newDate.setDate(dateObj.getDate() - i);
       formattedDates.push(newDate.toISOString());
     }
-
+  
+    // Generate dates 5 days into the future
+    const daysIntoFuture = 8;
+    for (let i = 1; i <= daysIntoFuture; i++) {
+      const newDate = new Date(dateObj);
+      newDate.setDate(dateObj.getDate() + i);
+      formattedDates.push(newDate.toISOString());
+    }
+  
+    console.log(formattedDates);
     return formattedDates;
   }
+  
 }
