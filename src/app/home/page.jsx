@@ -67,22 +67,6 @@ const getPreviousScores = async () => {
   return response.json();
 };
 
-// Mock data for leagues
-// const leagues = [
-//   { id: 1, name: "Premier League Survivors", members: 124, status: "active" },
-//   { id: 2, name: "Champions League Challenge", members: 56, status: "active" },
-//   { id: 3, name: "Euro 2024 Predictor", members: 89, status: "upcoming" },
-// ];
-
-// Mock data for fixtures and results
-// const fixturesAndResults = [
-//   { id: 1, homeTeam: "Arsenal", awayTeam: "Chelsea", score: "2 - 1", date: "2023-05-02" },
-//   { id: 2, homeTeam: "Liverpool", awayTeam: "Man United", score: "Upcoming", date: "2023-05-07" },
-//   { id: 3, homeTeam: "Man City", awayTeam: "Tottenham", score: "3 - 0", date: "2023-04-29" },
-//   { id: 4, homeTeam: "Newcastle", awayTeam: "Everton", score: "Upcoming", date: "2023-05-08" },
-//   { id: 5, homeTeam: "West Ham", awayTeam: "Crystal Palace", score: "1 - 1", date: "2023-04-30" },
-// ];
-
 export default function HomePage() {
   const [leagues, setLeagues] = useState([]);
   const [user, setUser] = useState(null);
