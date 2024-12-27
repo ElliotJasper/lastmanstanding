@@ -4,13 +4,14 @@ import { createClient } from "../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 
 import Link from "next/link";
+import { ChevronLeft, ChevronRight, Calendar, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -22,6 +23,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Navbar from "@/components/custom/Navbar";
+
+const generateDates = () => {
+  const dates = [];
+  const today = new Date();
+  for (let i = -5; i < 7; i++) {
+    const date = new Date();
+    date.setDate(today.getDate() + i);
+    dates.push(date);
+  }
+  return dates;
+};
+
+const dates = generateDates();
+console.log(dates);
+
+const mockMatches = [
+  { homeTeam: "Arsenal", awayTeam: "West Ham", homeScore: 3, awayScore: 1, status: "FT" },
+  { homeTeam: "Man City", awayTeam: "Everton", homeScore: 1, awayScore: 1, status: "FT" },
+  { homeTeam: "Newcastle", awayTeam: "Aston Villa", homeScore: 3, awayScore: 0, status: "FT" },
+];
 
 const getUserLeagues = async (userId) => {
   const response = await fetch(`/api/get-all-leagues`, {
@@ -75,6 +96,33 @@ export default function HomePage() {
   const [fixturesAndResults, setFixturesAndResults] = useState([]);
   const [leagueCode, setLeagueCode] = useState("");
   const [leagueName, setLeagueName] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const navigateDate = (direction) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(selectedDate.getDate() + (direction === "left" ? -1 : 1));
+    setSelectedDate(newDate);
+  };
+
+  const getMatchesForSelectedDate = () => {
+    if (!fixturesAndResults.length) return [];
+
+    return fixturesAndResults.filter((match) => {
+      const matchDate = new Date(match.date);
+      return (
+        matchDate.getDate() === selectedDate.getDate() &&
+        matchDate.getMonth() === selectedDate.getMonth() &&
+        matchDate.getFullYear() === selectedDate.getFullYear()
+      );
+    });
+  };
+
+  // Function to determine match status
+  const getMatchStatus = (match) => {
+    if (match.eventProgress === "PostEvent") return "FT";
+    if (match.eventProgress === "PreEvent") return "UP";
+    return match.eventProgress;
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -111,7 +159,7 @@ export default function HomePage() {
     try {
       const data = await getPreviousScores();
       setFixturesAndResults(data);
-      console.log(data);
+      console.log("data", data);
     } catch (err) {
       console.log(err.message);
     }
@@ -293,41 +341,49 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </section>
-          <section aria-labelledby="fixtures-results-title">
-            <h2 id="fixtures-results-title" className="text-xl font-semibold mb-4 text-[#4a82b0]">
-              Recent Scores & Fixtures
-            </h2>
-            <Card className="border-t-4 border-t-[#e01883]">
-              <Tabs defaultValue="all" className="w-full">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Matches</CardTitle>
-                    <TabsList className="bg-[#4a82b0]/10">
-                      <TabsTrigger
-                        value="all"
-                        className="data-[state=active]:bg-[#4a82b0] data-[state=active]:text-white"
-                      >
-                        All
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="results"
-                        className="data-[state=active]:bg-[#4a82b0] data-[state=active]:text-white"
-                      >
-                        Results
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="live"
-                        className="data-[state=active]:bg-[#4a82b0] data-[state=active]:text-white"
-                      >
-                        Live
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <TabsContent value="all" className="space-y-4">
-                    {fixturesAndResults.map((match) => (
-                      <div key={match.id} className="flex items-center">
+          <div className="lg:col-span-1">
+            <Card className="sticky top-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold flex items-center justify-between">
+                  <span className="text-[#4a82b0]">Fixtures & Results</span>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => navigateDate("left")}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+
+                  <ScrollArea className="w-full whitespace-nowrap">
+                    <div className="flex gap-2">
+                      {dates.map((date, i) => (
+                        <Button
+                          key={i}
+                          variant={date.toDateString() === selectedDate.toDateString() ? "default" : "outline"}
+                          className="flex-shrink-0 w-16"
+                          onClick={() => setSelectedDate(date)}
+                        >
+                          <div className="flex flex-col items-center">
+                            <span className="text-xs">{date.toLocaleDateString("en-US", { weekday: "short" })}</span>
+                            <span className="text-sm font-bold">{date.getDate()}</span>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+
+                  <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => navigateDate("right")}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Rest of your matches display code remains the same */}
+                <div className="mt-4 space-y-3">
+                  {getMatchesForSelectedDate().map((match, index) => (
+                    <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                      <div className="flex justify-between items-center text-sm">
                         <div className="w-[40%] flex items-center justify-end space-x-2">
                           <span className="text-sm">{match.homeTeam}</span>
                           <Avatar className="h-10 w-10">
@@ -335,10 +391,20 @@ export default function HomePage() {
                             <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
                           </Avatar>
                         </div>
-                        <div className="w-[20%] text-center px-2">
-                          <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                            {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
-                          </span>
+                        <div className="w-[20%] text-center px-2 flex flex-col items-center">
+                          <div>
+                            <span className="font-semibold text-[#e01883] whitespace-nowrap">
+                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
+                            </span>
+                            <span className="text-xs text-muted-foreground ml-2">{getMatchStatus(match)}</span>
+                          </div>
+                          <div className="text-center text-xs text-muted-foreground mt-1">
+                            {new Date(match.date).toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
+                          </div>
                         </div>
                         <div className="w-[40%] flex items-center space-x-2">
                           <Avatar className="h-10 w-10">
@@ -348,66 +414,15 @@ export default function HomePage() {
                           <span className="text-sm">{match.awayTeam}</span>
                         </div>
                       </div>
-                    ))}
-                  </TabsContent>
-                  <TabsContent value="results" className="space-y-4">
-                    {fixturesAndResults
-                      .filter((match) => match.eventProgress == "PostEvent")
-                      .map((match) => (
-                        <div key={match.id} className="flex items-center">
-                          <div className="w-[40%] flex items-center justify-end space-x-2">
-                            <span className="text-sm">{match.homeTeam}</span>
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={match.homeImg} alt={match.homeTeam} />
-                              <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
-                            </Avatar>
-                          </div>
-                          <div className="w-[20%] text-center px-2">
-                            <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
-                            </span>
-                          </div>
-                          <div className="w-[40%] flex items-center space-x-2">
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={match.awayImg} alt={match.awayTeam} />
-                              <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">{match.awayTeam}</span>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
-                  <TabsContent value="live" className="space-y-4">
-                    {fixturesAndResults
-                      .filter((match) => match.eventProgress == "MidEvent")
-                      .map((match) => (
-                        <div key={match.id} className="flex items-center">
-                          <div className="w-[40%] flex items-center justify-end space-x-2">
-                            <span className="text-sm">{match.homeTeam}</span>
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={match.homeImg} alt={match.homeTeam} />
-                              <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
-                            </Avatar>
-                          </div>
-                          <div className="w-[20%] text-center px-2">
-                            <span className="font-semibold text-[#e01883] whitespace-nowrap">
-                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
-                            </span>
-                          </div>
-                          <div className="w-[40%] flex items-center space-x-2">
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={match.awayImg} alt={match.awayTeam} />
-                              <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">{match.awayTeam}</span>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
-                </CardContent>
-              </Tabs>
+                    </div>
+                  ))}
+                  {getMatchesForSelectedDate().length === 0 && (
+                    <div className="text-center text-muted-foreground py-8">No matches scheduled for this date</div>
+                  )}
+                </div>
+              </CardContent>
             </Card>
-          </section>
+          </div>
         </div>
       </main>
     </div>
