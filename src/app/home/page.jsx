@@ -108,9 +108,13 @@ export default function HomePage() {
 
   // Function to determine match status
   const getMatchStatus = (match) => {
-    if (match.eventProgress === "PostEvent") return "FT";
-    if (match.eventProgress === "PreEvent") return "KO";
-    return match.eventProgress;
+    if (match.eventProgress === "PostEvent") {
+      return "FT";
+    } else if (match.eventProgress === "PreEvent") {
+      return "KO";
+    } else if (match.eventPorgress === "MidEvent") {
+      return "";
+    }
   };
 
   useEffect(() => {
