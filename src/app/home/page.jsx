@@ -36,13 +36,6 @@ const generateDates = () => {
 };
 
 const dates = generateDates();
-console.log(dates);
-
-const mockMatches = [
-  { homeTeam: "Arsenal", awayTeam: "West Ham", homeScore: 3, awayScore: 1, status: "FT" },
-  { homeTeam: "Man City", awayTeam: "Everton", homeScore: 1, awayScore: 1, status: "FT" },
-  { homeTeam: "Newcastle", awayTeam: "Aston Villa", homeScore: 3, awayScore: 0, status: "FT" },
-];
 
 const getUserLeagues = async (userId) => {
   const response = await fetch(`/api/get-all-leagues`, {
@@ -105,7 +98,7 @@ export default function HomePage() {
     // Use a safe check for window
     const isMobileView = typeof window !== "undefined" && window.innerWidth < 640;
 
-    const visibleCount = isMobileView ? 4 : 7;
+    const visibleCount = 4;
     const start = Math.max(0, currentIndex - Math.floor(visibleCount / 2));
     return allDates.slice(start, start + visibleCount);
   };
@@ -401,13 +394,21 @@ export default function HomePage() {
                   {getMatchesForSelectedDate().map((match, index) => (
                     <div key={index} className="p-2 sm:p-3 bg-muted/50 rounded-lg max-w-full overflow-hidden">
                       <div className="flex justify-between items-center text-xs sm:text-sm">
-                        <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2 truncate">
-                          <span className="truncate">{match.homeTeam}</span>
+                        {/* Home Team */}
+                        <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2">
+                          <span
+                            className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
+                            title={match.homeTeam}
+                          >
+                            {match.homeTeam}
+                          </span>
                           <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                             <AvatarImage src={match.homeImg} alt={match.homeTeam} />
                             <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
                           </Avatar>
                         </div>
+
+                        {/* Score and Time */}
                         <div className="flex-[1] text-center flex flex-col items-center">
                           <div>
                             <span className="font-semibold text-[#e01883] text-xs sm:text-sm">
@@ -425,12 +426,19 @@ export default function HomePage() {
                             })}
                           </div>
                         </div>
-                        <div className="flex-[2] flex items-center gap-1 sm:gap-2 truncate">
+
+                        {/* Away Team */}
+                        <div className="flex-[2] flex items-center gap-1 sm:gap-2">
                           <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                             <AvatarImage src={match.awayImg} alt={match.awayTeam} />
                             <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
                           </Avatar>
-                          <span className="truncate">{match.awayTeam}</span>
+                          <span
+                            className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
+                            title={match.awayTeam}
+                          >
+                            {match.awayTeam}
+                          </span>
                         </div>
                       </div>
                     </div>
