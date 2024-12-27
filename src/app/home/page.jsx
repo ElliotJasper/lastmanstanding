@@ -165,17 +165,6 @@ export default function HomePage() {
     }
   };
 
-  const handleLogout = async () => {
-    const supabase = createClient();
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error.message);
-    } else {
-      // Redirect to home or login page after logout
-      window.location.href = "/login";
-    }
-  };
-
   const handleJoinLeague = async (e) => {
     e.preventDefault();
 
@@ -361,7 +350,9 @@ export default function HomePage() {
                         <Button
                           key={i}
                           variant={date.toDateString() === selectedDate.toDateString() ? "default" : "outline"}
-                          className="flex-shrink-0 w-16"
+                          className={`flex-shrink-0 w-16 ${
+                            date.toDateString() === selectedDate.toDateString() ? "bg-[#e01883] text-white" : ""
+                          }`}
                           onClick={() => setSelectedDate(date)}
                         >
                           <div className="flex flex-col items-center">
