@@ -189,6 +189,23 @@ export default function TeamSelectionPage({ params }) {
     fetchPicks();
   }, [params.userId, params.leagueId]);
 
+  useEffect(() => {
+    // Update deadline timer every minute
+    const updateDeadline = () => {
+      const time = timeUntilThursdayMidnight();
+      setTimeUntilDeadline(time);
+    };
+
+    // Initial update
+    updateDeadline();
+
+    // Set up interval for updates
+    const interval = setInterval(updateDeadline, 60000); // Update every minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
   const handleTeamClick = (team, date) => {
     setSelectedPick({ team, date });
     setSuccessMessage(null); // Reset success message on new selection
