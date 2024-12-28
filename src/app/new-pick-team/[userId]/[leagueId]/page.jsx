@@ -120,6 +120,7 @@ export default function TeamSelectionPage({ params }) {
   const [users, setUsers] = useState();
   const [expandedUser, setExpandedUser] = useState(null);
   const [leagueInfo, setLeagueInfo] = useState(null);
+  const [timeUntilDeadline, setTimeUntilDeadline] = useState({ days: 0, hours: 0, minutes: 0 });
 
   useEffect(() => {
     const supabase = createClient();
