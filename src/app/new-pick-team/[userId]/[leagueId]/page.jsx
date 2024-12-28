@@ -480,6 +480,7 @@ export default function TeamSelectionPage({ params }) {
                   <p className="text-2xl font-bold text-[#e01883]">
                     {timeUntilDeadline.days}d {timeUntilDeadline.hours}h {timeUntilDeadline.minutes}m
                   </p>
+                  <p className="text-sm text-muted-foreground">Until picks lock</p>
                 </div>
               </CardContent>
             </Card>
