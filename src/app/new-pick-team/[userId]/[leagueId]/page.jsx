@@ -100,6 +100,25 @@ const getLeagueInfo = async (leagueId) => {
   return data;
 };
 
+const DeadlineDisplay = () => {
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      forceUpdate((prev) => prev + 1); // This forces a re-render
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup on unmount
+  }, []);
+
+  const deadline = timeUntilThursdayMidnight();
+  return (
+    <p className="text-2xl font-bold text-[#e01883]">
+      {`${deadline.days}d ${deadline.hours}h ${deadline.minutes}m ${deadline.seconds}s`}
+    </p>
+  );
+};
+
 function timeUntilThursdayMidnight() {
   const now = new Date(); // Current date and time
 
@@ -117,13 +136,14 @@ function timeUntilThursdayMidnight() {
   // Calculate the difference in milliseconds
   const difference = thursdayMidnight - now;
 
-  // Convert the difference to days, hours, and minutes
+  // Convert the difference to days, hours, minutes, and seconds
   const totalMinutes = Math.floor(difference / (1000 * 60));
   const days = Math.floor(totalMinutes / (60 * 24));
   const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
   const minutes = totalMinutes % 60;
+  const seconds = Math.floor((difference / 1000) % 60);
 
-  return { days, hours, minutes };
+  return { days, hours, minutes, seconds };
 }
 
 export default function TeamSelectionPage({ params }) {
@@ -139,7 +159,6 @@ export default function TeamSelectionPage({ params }) {
   const [users, setUsers] = useState();
   const [expandedUser, setExpandedUser] = useState(null);
   const [leagueInfo, setLeagueInfo] = useState(null);
-  const [timeUntilDeadline, setTimeUntilDeadline] = useState({ days: 0, hours: 0, minutes: 0 });
 
   useEffect(() => {
     const supabase = createClient();
@@ -208,23 +227,6 @@ export default function TeamSelectionPage({ params }) {
     fetchUsers();
     fetchPicks();
   }, [params.userId, params.leagueId]);
-
-  useEffect(() => {
-    // Update deadline timer every minute
-    const updateDeadline = () => {
-      const time = timeUntilThursdayMidnight();
-      setTimeUntilDeadline(time);
-    };
-
-    // Initial update
-    updateDeadline();
-
-    // Set up interval for updates
-    const interval = setInterval(updateDeadline, 60000); // Update every minute
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
 
   const handleTeamClick = (team, date) => {
     setSelectedPick({ team, date });
@@ -501,9 +503,7 @@ export default function TeamSelectionPage({ params }) {
               </CardHeader>
               <CardContent>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#e01883]">
-                    {timeUntilDeadline.days}d {timeUntilDeadline.hours}h {timeUntilDeadline.minutes}m
-                  </p>
+                  <DeadlineDisplay />
                   <p className="text-sm text-muted-foreground">Until picks lock</p>
                 </div>
               </CardContent>
