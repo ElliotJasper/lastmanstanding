@@ -142,6 +142,7 @@ export default function HomePage() {
   const fetchLeagues = async (userId) => {
     try {
       const data = await getUserLeagues(userId);
+      console.log("league data", data);
       setLeagues(data);
     } catch (err) {
       console.log(err);
@@ -310,7 +311,7 @@ export default function HomePage() {
                             </CardHeader>
                             <CardContent>
                               <div className="flex gap-8">
-                                <div className="text-sm text-muted-foreground">{league.members} members</div>
+                                <div className="text-sm text-muted-foreground">{league.leagues.members} members</div>
                                 <div className="text-sm text-muted-foreground">code: {league.leagues.code}</div>
                               </div>
                             </CardContent>
