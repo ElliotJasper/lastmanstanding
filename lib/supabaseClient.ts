@@ -263,7 +263,7 @@ export class SupabaseClient {
   async getLeagueInfo(leagueId: number): Promise<any> {
     const { data: league, error: leagueError } = await this.serviceClient
       .from("leagues")
-      .select("isactive, user_id")
+      .select("isactive, user_id, created_at")
       .eq("id", leagueId)
       .single();
 
