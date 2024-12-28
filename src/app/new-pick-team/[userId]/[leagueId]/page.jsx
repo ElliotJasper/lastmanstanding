@@ -282,13 +282,10 @@ export default function TeamSelectionPage({ params }) {
                   <div className="space-y-6">
                     <p className="text-xl">You've won the Football Last Man Standing League!</p>
                     <div className="p-6 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg shadow-inner">
-                      <h3 className="font-semibold text-2xl text-[#4a82b0] mb-4">Gameweeks survived: {gameWeeks}</h3>
+                      <h3 className="font-semibold text-2xl text-[#4a82b0] mb-4">Victory Secured</h3>
                       <ul className="space-y-2 text-lg"></ul>
                     </div>
-                    <p className="italic text-xl text-[#4a82b0]">
-                      "The difference between the impossible and the possible lies in a person's determination." - Tommy
-                      Lasorda
-                    </p>
+                    <p className="italic text-xl text-[#4a82b0]">"You're simply the best, better than all the rest."</p>
                     <div className="pt-4">
                       <Button className="bg-[#4a82b0] hover:bg-[#4a82b0]/90 text-lg px-6 py-3">
                         Join New League <ArrowRight className="ml-2 h-5 w-5" />
