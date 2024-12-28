@@ -32,7 +32,7 @@ async function markLastUserAsWinner() {
     }
 
     // If only one active user remains, mark them as the winner
-    if (activeUsers.length === 1 || activeUsers.length === 0) {
+    if (activeUsers.length === 1) {
       const lastUser = activeUsers[0];
 
       const { error: updateError } = await supabase
