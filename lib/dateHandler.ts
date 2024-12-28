@@ -13,9 +13,12 @@ export class DateHandler {
     // End of Sunday
     const endDate = new Date(dateObj);
     const daysUntilSunday = 7 - endDate.getDay();
+
+    // Set the time to the end of the day
     endDate.setDate(endDate.getDate() + daysUntilSunday);
     endDate.setHours(23, 59, 59, 999);
     formattedDates.push(endDate.toISOString());
+
     return formattedDates;
    }
 
