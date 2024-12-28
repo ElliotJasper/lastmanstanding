@@ -16,7 +16,6 @@ export class DateHandler {
     endDate.setDate(endDate.getDate() + daysUntilSunday);
     endDate.setHours(23, 59, 59, 999);
     formattedDates.push(endDate.toISOString());
-    console.log(formattedDates)
     return formattedDates;
    }
 
@@ -47,7 +46,6 @@ export class DateHandler {
       formattedDates.push(newDate.toISOString());
     }
   
-    console.log(formattedDates);
     return formattedDates;
   }
   
