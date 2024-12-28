@@ -477,8 +477,9 @@ export default function TeamSelectionPage({ params }) {
               </CardHeader>
               <CardContent>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#e01883]">2d 14h 37m</p>
-                  <p className="text-sm text-muted-foreground">Until picks lock for Gameweek 38</p>
+                  <p className="text-2xl font-bold text-[#e01883]">
+                    {timeUntilDeadline.days}d {timeUntilDeadline.hours}h {timeUntilDeadline.minutes}m
+                  </p>
                 </div>
               </CardContent>
             </Card>
