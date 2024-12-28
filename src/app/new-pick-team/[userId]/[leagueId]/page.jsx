@@ -81,6 +81,32 @@ const getLeagueInfo = async (leagueId) => {
   return data;
 };
 
+function timeUntilThursdayMidnight() {
+  const now = new Date(); // Current date and time
+
+  // Calculate the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const currentDay = now.getDay();
+
+  // Calculate how many days until the next Thursday
+  const daysUntilThursday = (4 - currentDay + 7) % 7 || 7;
+
+  // Create the target Thursday midnight date
+  const thursdayMidnight = new Date(now);
+  thursdayMidnight.setDate(now.getDate() + daysUntilThursday); // Move to next Thursday
+  thursdayMidnight.setHours(0, 0, 0, 0); // Set time to midnight
+
+  // Calculate the difference in milliseconds
+  const difference = thursdayMidnight - now;
+
+  // Convert the difference to days, hours, and minutes
+  const totalMinutes = Math.floor(difference / (1000 * 60));
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  return { days, hours, minutes };
+}
+
 export default function TeamSelectionPage({ params }) {
   const [picks, setPicks] = useState([]);
   const [selectedPick, setSelectedPick] = useState(null);
