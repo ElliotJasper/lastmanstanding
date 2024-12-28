@@ -15,6 +15,25 @@ import Navbar from "@/components/custom/Navbar";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 
+function calculateTimeDifference(createdAt) {
+  const start = new Date(createdAt);
+  const end = new Date();
+
+  const diffInMs = end - start;
+
+  const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+}
+
 // Function to submit selected team pick
 const submitPick = async (userId, leagueId, selectedPick) => {
   const response = await fetch(`/api/submit-pick`, {
@@ -177,6 +196,7 @@ export default function TeamSelectionPage({ params }) {
     const fetchLeagueInfo = async () => {
       try {
         const data = await getLeagueInfo(params.leagueId);
+        console.log("league info", data);
         setLeagueInfo(data);
         setLoading(false);
       } catch (err) {
@@ -282,8 +302,15 @@ export default function TeamSelectionPage({ params }) {
                   <div className="space-y-6">
                     <p className="text-xl">You've won the Football Last Man Standing League!</p>
                     <div className="p-6 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg shadow-inner">
-                      <h3 className="font-semibold text-2xl text-[#4a82b0] mb-4">Victory Secured</h3>
-                      <ul className="space-y-2 text-lg"></ul>
+                      {leagueInfo?.created_at &&
+                        (() => {
+                          const timeDiff = calculateTimeDifference(leagueInfo.created_at);
+                          return (
+                            <li className="text-[#4a82b0]">
+                              League Duration: {timeDiff.days} days, {timeDiff.hours} hours, {timeDiff.minutes} minutes
+                            </li>
+                          );
+                        })()}
                     </div>
                     <p className="italic text-xl text-[#4a82b0]">"You're simply the best, better than all the rest."</p>
                     <div className="pt-4">
