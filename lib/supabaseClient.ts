@@ -117,7 +117,7 @@ export class SupabaseClient {
    * @returns {Promise<any>} - All pickable games / teams
    */
   async getPickableGames(): Promise<any> {
-    const dates = DateHandler.generateDatesUntilSunday();
+    const dates = DateHandler.generateDaysFridayToMonday();
 
     const { data: games, error: picksError } = await this.serviceClient
       .from("games")
