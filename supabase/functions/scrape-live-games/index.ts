@@ -289,14 +289,21 @@ async function EliminateFunction(score) {
 async function TestFunction(score) {
   const scoreDate = new Date(score.date).toISOString();
   console.log(score);
+
   async function updateEliminationsForTeam(teamName, teamOutcome) {
     if (teamOutcome !== "win") {
-      // Find all users who picked the team (either home or away) based on teamName and date
+      // Modified query to join with leagues table and check isActive
       const { data: users, error: fetchError } = await supabase
         .from("picks")
-        .select("user_id, league_id")
-        .eq("teamName", teamName) // Match the team name
-        .eq("date", scoreDate); // Match the date
+        .select(`
+          user_id,
+          league_id,
+          leagues!inner(isactive)
+        `)
+        .eq("teamName", teamName)
+        .eq("date", scoreDate)
+        .eq("leagues.isactive", true);  // Only get picks from active leagues
+
       console.log("USERS", users);
       if (fetchError) {
         console.error(`Error fetching users who picked ${teamName}:`, fetchError);
@@ -308,7 +315,7 @@ async function TestFunction(score) {
       console.log(`Users who picked ${teamName}:`, users);
 
       if (users.length === 0) {
-        console.log(`No users picked ${teamName}.`);
+        console.log(`No users picked ${teamName} in active leagues.`);
         return;
       }
 
@@ -317,11 +324,11 @@ async function TestFunction(score) {
         const { error: updateError } = await supabase
           .from("league_users")
           .update({
-            isEliminated: true, // Mark the user as eliminated
-            canPick: false, // Prevent them from picking further
+            isEliminated: true,
+            canPick: false,
           })
-          .eq("user_id", user.user_id) // Match the user_id from picks
-          .eq("league_id", user.league_id); // Match the league_id from picks
+          .eq("user_id", user.user_id)
+          .eq("league_id", user.league_id);
 
         if (updateError) {
           console.error(
