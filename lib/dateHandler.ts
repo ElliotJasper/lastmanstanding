@@ -3,24 +3,30 @@ export class DateHandler {
    * Generates an array of dates from today until the next Sunday?
    * @returns {string[]} - An array of dates
    */
-  static generateDatesUntilSunday(): string[] {
+  static generateDaysFridayToMonday(): string[] {
     const formattedDates: string[] = [];
-    const dateObj = new Date();
+    const currentDate = new Date();
     
-    // Start from current time for today's games
-    formattedDates.push(dateObj.toISOString());
+    // Calculate days until next Friday
+    let daysUntilFriday = 5 - currentDate.getDay();
+    if (daysUntilFriday <= 0) {
+        daysUntilFriday += 7; // If we're past Friday, get next Friday
+    }
     
-    // End of Sunday
-    const endDate = new Date(dateObj);
-    const daysUntilSunday = 7 - endDate.getDay();
-
-    // Set the time to the end of the day
-    endDate.setDate(endDate.getDate() + daysUntilSunday);
+    // Set start date (Friday)
+    const startDate = new Date(currentDate);
+    startDate.setDate(currentDate.getDate() + daysUntilFriday);
+    startDate.setHours(0, 0, 0, 0);
+    formattedDates.push(startDate.toISOString());
+    
+    // Set end date (following Monday)
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 3); // Add 3 days to get to Monday
     endDate.setHours(23, 59, 59, 999);
     formattedDates.push(endDate.toISOString());
-
+    
     return formattedDates;
-   }
+  }
 
   /**
    * Generates an array of dates from today until the previous Sunday
