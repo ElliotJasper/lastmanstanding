@@ -462,12 +462,19 @@ export default function TeamSelectionPage({ params }) {
                                   <span className="font-medium">{user.display_name}</span>
                                 </div>
                                 <div className="flex items-center space-x-2 mr-2">
-                                  <Badge
-                                    variant={user.isEliminated == false ? "default" : "secondary"}
-                                    className={user.isEliminated == false ? "bg-green-500" : "bg-red-500 text-white"}
-                                  >
-                                    {user.isEliminated == false ? "Active" : "Eliminated"}
-                                  </Badge>
+                                  {user.winner ? (
+                                    <Badge variant="secondary" className="bg-[#4CAF50] text-white">
+                                      Winner
+                                    </Badge>
+                                  ) : user.isEliminated ? (
+                                    <Badge variant="secondary" className="bg-red-500 text-white">
+                                      Eliminated
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="default" className="bg-[#4a82b0] text-white">
+                                      Active
+                                    </Badge>
+                                  )}
                                   {expandedUser === user.id ? (
                                     <ChevronUp className="h-4 w-4" />
                                   ) : (
