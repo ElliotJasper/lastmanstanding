@@ -11,6 +11,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Trophy, ArrowRight, Star, AlertCircle, ChevronDown, ChevronUp, PlayCircle } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Navbar from "@/components/custom/Navbar";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Link from "next/link";
 import confetti from "canvas-confetti";
@@ -270,14 +272,36 @@ export default function TeamSelectionPage({ params }) {
   };
 
   const handleActivate = async () => {
-    await fetch(`/api/activate-league/${params.leagueId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch(`/api/activate-league/${params.leagueId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    window.location.reload();
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error, {
+          position: "top-center", // Correct position value
+          autoClose: 3000, // Auto close in 3 seconds
+        });
+        return;
+      }
+
+      toast.success("League activated successfully!", {
+        position: "top-center", // Correct position value
+        autoClose: 3000,
+      });
+
+      window.location.reload();
+    } catch (error) {
+      toast.error("Cannot activate league during gameplay time", {
+        position: "top-center", // Correct position value
+        autoClose: 3000,
+      });
+    }
   };
 
   if (loading) {
