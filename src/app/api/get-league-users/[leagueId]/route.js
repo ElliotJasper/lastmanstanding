@@ -27,6 +27,7 @@ export async function GET(req, { params }) {
         user_id: leagueUser.user_id,
         display_name: userProfile?.display_name || null,
         isEliminated: leagueUser.isEliminated,
+        winner: leagueUser.winner,
         avatar_url: avatarUrl, // Get avatar URL for each user
       };
     })

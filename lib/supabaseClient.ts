@@ -84,7 +84,7 @@ export class SupabaseClient {
   async getLeagueUsers(leagueId: string): Promise<any> {
     const { data: leagueUsers, error: leagueUsersError } = await this.serviceClient
       .from("league_users")
-      .select("user_id, isEliminated")
+      .select("user_id, isEliminated, winner")
       .eq("league_id", parseInt(leagueId));
 
     if (leagueUsersError) {
