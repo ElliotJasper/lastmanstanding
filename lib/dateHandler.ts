@@ -58,4 +58,13 @@ export class DateHandler {
     return formattedDates;
   }
   
+  /**
+   * Checks if the current date falls between Friday and Monday (inclusive)
+   * @returns {boolean} - True if current date is Friday, Saturday, Sunday, or Monday
+   */
+  static isWeekendPeriod(): boolean {
+    const currentDay = new Date().getDay();
+    // 5 = Friday, 6 = Saturday, 0 = Sunday, 1 = Monday
+    return currentDay === 5 || currentDay === 6 || currentDay === 0 || currentDay === 1;
+  }
 }
