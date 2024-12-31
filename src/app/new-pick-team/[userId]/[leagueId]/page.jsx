@@ -339,10 +339,12 @@ export default function TeamSelectionPage({ params }) {
                         })()}
                     </div>
                     <p className="italic text-xl text-[#4a82b0]">"You're simply the best, better than all the rest."</p>
-                    <div className="pt-4">
-                      <Button className="bg-[#4a82b0] hover:bg-[#4a82b0]/90 text-lg px-6 py-3">
-                        Join New League <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
+                    <div className="pt-4 flex justify-center">
+                      <Link href="/" passHref>
+                        <Button className="bg-[#4a82b0] hover:bg-[#4a82b0]/90 text-lg px-6 py-3 flex items-center">
+                          Join New League <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </CardContent>
