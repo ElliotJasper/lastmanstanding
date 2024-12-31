@@ -464,7 +464,7 @@ export default function TeamSelectionPage({ params }) {
                                 <div className="flex items-center space-x-2 mr-2">
                                   <Badge
                                     variant={user.isEliminated == false ? "default" : "secondary"}
-                                    className={user.isEliminated == false ? "bg-green-500" : "bg-red-500"}
+                                    className={user.isEliminated == false ? "bg-green-500" : "bg-red-500 text-white"}
                                   >
                                     {user.isEliminated == false ? "Active" : "Eliminated"}
                                   </Badge>
