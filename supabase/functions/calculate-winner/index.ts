@@ -31,7 +31,24 @@ async function markLastUserAsWinner() {
       continue;
     }
 
-    // If only one active user remains, check their picks
+    // If no active users, deactivate the league
+    if (activeUsers.length === 0) {
+      const { error: updateLeagueError } = await supabase
+      .from("leagues")
+      .update({
+        isactive: false,
+      })
+      .eq("id", league.id);
+
+    if (updateLeagueError) {
+      console.error(`Error updating deactivating league:`, updateError);
+    } else {
+      console.log(
+        `No winner. League ${league.id} has been deactivated.`
+      );
+    }
+    }
+
     if (activeUsers.length === 1) {
       const lastUser = activeUsers[0];
 
