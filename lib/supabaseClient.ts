@@ -278,18 +278,26 @@ export class SupabaseClient {
    * Set the league as active
    * @param leagueId
    */
-  async activateLeague(leagueId: number, clientId: string): Promise<void> {
-    if (this.isLeagueCreator(leagueId, clientId)) {
-      const { error: leagueError } = await this.serviceClient
-        .from("leagues")
-        .update({ isactive: true })
-        .eq("id", leagueId);
-      if (leagueError) {
-        throw new Error(`Error activating league: ${leagueError.message}`);
-      }
-    } else {
-      throw new Error("You are not the creator of this league");
+  async activateLeague(leagueId: number, clientId: string): Promise<{ error?: string }> {
+    const isWeekendPeriod = DateHandler.isWeekendPeriod();
+    if (isWeekendPeriod) {
+      return { error: "Cannot activate league during the weekend period" };
     }
+  
+    if (!this.isLeagueCreator(leagueId, clientId)) {
+      return { error: "You are not the creator of this league" };
+    }
+  
+    const { error: leagueError } = await this.serviceClient
+      .from("leagues")
+      .update({ isactive: true })
+      .eq("id", leagueId);
+      
+    if (leagueError) {
+      return { error: `Error activating league: ${leagueError.message}` };
+    }
+  
+    return {};
   }
 
   /**
