@@ -14,9 +14,7 @@ export async function POST(req, { params }) {
   if (formData.profile_picture) {
     try {
       // First, list and delete any existing avatar
-      const { data: listData, error: listError } = await supabaseClient.client.storage
-        .from("avatars")
-        .list();
+      const { data: listData, error: listError } = await supabaseClient.client.storage.from("avatars").list();
 
       if (listError) {
         console.error("Error listing files:", listError);
@@ -29,7 +27,6 @@ export async function POST(req, { params }) {
       const existingAvatar = listData?.find((file) => file.name.startsWith(`${userData.id}.`));
 
       if (existingAvatar) {
-        console.log("Found existing avatar:", existingAvatar.name);
         // Delete the existing avatar
         const { error: deleteError } = await supabaseClient.client.storage
           .from("avatars")
@@ -41,7 +38,6 @@ export async function POST(req, { params }) {
             status: 500,
           });
         }
-        console.log("Successfully deleted existing avatar");
       }
 
       // Now proceed with uploading the new avatar
@@ -53,10 +49,6 @@ export async function POST(req, { params }) {
       const buffer = Buffer.from(base64Data, "base64");
 
       const filePath = `${userId}.${extension}`;
-
-      console.log("Buffer length:", buffer.length);
-      console.log("File path:", filePath);
-
       const { error } = await supabaseClient.uploadAvatar(filePath, buffer, mimeType);
 
       if (error) {

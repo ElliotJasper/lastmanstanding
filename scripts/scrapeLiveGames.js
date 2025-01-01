@@ -3,10 +3,7 @@ import fetch from "node-fetch";
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 export async function scrapeTodaysScores() {
   let games = [];
@@ -83,12 +80,7 @@ async function saveScoresToDatabase(scores) {
 
     if (existingGame) {
       if (existingGame.eventProgress !== "PostEvent" && score.eventProgress === "PostEvent") {
-        console.log(
-          "PostEvent detected, calling TestFunction for:",
-          score.homeTeam,
-          "vs",
-          score.awayTeam
-        );
+        console.log("PostEvent detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
         TestFunction(score);
       }
     }
@@ -164,9 +156,7 @@ async function TestFunction(score) {
             updateError
           );
         } else {
-          console.log(
-            `User ${user.user_id} in league ${user.league_id} has been eliminated for picking ${teamName}.`
-          );
+          console.log(`User ${user.user_id} in league ${user.league_id} has been eliminated for picking ${teamName}.`);
         }
       });
 

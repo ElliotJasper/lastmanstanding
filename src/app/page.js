@@ -15,7 +15,6 @@ export default function LandingPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle email submission logic here
-    console.log("Email submitted:", email);
     setEmail("");
   };
 

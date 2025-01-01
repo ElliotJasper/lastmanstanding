@@ -11,6 +11,5 @@ export async function GET(req, { params }) {
 
   // Fetch the league isactive / other info
   const avatar = await supabaseClient.downloadAvatar(userData.id);
-  console.log("Avatar:", avatar);
   return new Response(avatar, { status: 200 });
 }

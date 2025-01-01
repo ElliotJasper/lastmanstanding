@@ -142,7 +142,6 @@ export default function HomePage() {
   const fetchLeagues = async (userId) => {
     try {
       const data = await getUserLeagues(userId);
-      console.log("league data", data);
       setLeagues(data);
     } catch (err) {
       console.log(err);
@@ -153,9 +152,8 @@ export default function HomePage() {
     try {
       const data = await getPreviousScores();
       setFixturesAndResults(data);
-      console.log("data", data);
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   };
 
@@ -173,7 +171,6 @@ export default function HomePage() {
       });
 
       if (response.ok) {
-        console.log("League joined successfully");
         window.location.reload();
       } else {
         // Handle HTTP errors by parsing the response error message
@@ -193,7 +190,6 @@ export default function HomePage() {
     const formData = {
       leagueName,
     };
-    console.log("THIS IS THE FORM DATA", formData);
 
     try {
       const response = await fetch("/api/create-league", {
@@ -205,7 +201,6 @@ export default function HomePage() {
       });
 
       if (response.ok) {
-        console.log("League created successfully");
         window.location.reload();
       } else {
         console.error("Failed to create league");

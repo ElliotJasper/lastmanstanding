@@ -41,7 +41,6 @@ export async function POST(req) {
 
   // Extract team names from previous picks
   const teamNames = previousPicks.map((pick) => pick.teamName);
-  console.log("User's previous picks:", teamNames);
 
   // Check if the selected team has already been picked
   if (teamNames.includes(formData.selectedPick.team)) {
