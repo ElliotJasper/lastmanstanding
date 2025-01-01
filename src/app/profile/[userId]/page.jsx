@@ -85,7 +85,6 @@ export default function ProfilePage({ params }) {
   const getUserAvatar = async () => {
     try {
       const avatarUrl = await getAvatar(params.userId);
-      console.log("Avatar URL:", avatarUrl);
       setProfilePicture(avatarUrl); // Set URL as profile picture
     } catch (error) {
       console.error(error);
