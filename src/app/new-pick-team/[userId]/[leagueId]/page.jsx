@@ -83,7 +83,6 @@ const getUsers = async (leagueId) => {
     throw new Error("Failed to fetch users");
   }
   const data = await response.json();
-  console.log("league users", data);
   return data;
 };
 
@@ -98,7 +97,6 @@ const getLeagueInfo = async (leagueId) => {
     throw new Error("Failed to fetch league info");
   }
   const data = await response.json();
-  console.log("isactive", data);
   return data;
 };
 
@@ -187,7 +185,6 @@ export default function TeamSelectionPage({ params }) {
         setPicks(data.availablePicks);
         setIsEliminated(data.isEliminated);
         setGameWeeks(data.gameWeeks);
-        console.log(loading);
         setWinner(data.winner);
 
         if (data.winner) {
@@ -206,9 +203,7 @@ export default function TeamSelectionPage({ params }) {
     const fetchUsers = async () => {
       try {
         const data = await getUsers(params.leagueId);
-        console.log("data", data);
         setUsers(data);
-        console.log("users", users);
       } catch (err) {
         console.log(err);
       }
@@ -217,7 +212,6 @@ export default function TeamSelectionPage({ params }) {
     const fetchLeagueInfo = async () => {
       try {
         const data = await getLeagueInfo(params.leagueId);
-        console.log("league info", data);
         setLeagueInfo(data);
         setLoading(false);
       } catch (err) {
