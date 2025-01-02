@@ -1,7 +1,6 @@
 "use client";
 
-import { createClient } from "../../../../utils/supabase/client";
-import Link from "next/link";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Navbar from "@/components/custom/Navbar";
 
 const getUserInfo = async (userId) => {
   const response = await fetch(`/api/get-user-info/${userId}`, {
@@ -43,51 +41,38 @@ const getAvatar = async (userId) => {
 
 export default function ProfilePage({ params }) {
   const [displayName, setDisplayName] = useState("");
-  const [user, setUser] = useState(null);
+  const { user, loading } = useAuth();
   const [profilePicture, setProfilePicture] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [profile, setProfile] = useState(null);
   const [hasUpdatedAvatar, setHasUpdatedAvatar] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-
-    const checkAuth = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (user != null) {
-        setUser(user);
-        getUserData();
-      } else {
-        // If there's no user, redirect to login
-        window.location.href = "/login";
-      }
-    };
-
-    checkAuth();
-    getUserAvatar();
-  }, []);
-
-  const getUserData = async () => {
-    try {
-      const data = await getUserInfo(params.userId);
-      setDisplayName(data.display_name);
-    } catch (error) {
-      console.error(error);
+    if (!loading && !user) {
+      window.location.href = "/login";
+      return;
     }
-  };
 
-  const getUserAvatar = async () => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user, loading]);
+
+  const fetchUserData = async () => {
     try {
-      const avatarUrl = await getAvatar(params.userId);
-      setProfilePicture(avatarUrl); // Set URL as profile picture
+      setIsLoading(true);
+      // Fetch user data and avatar in parallel
+      const [userData, avatarUrl] = await Promise.all([getUserInfo(params.userId), getAvatar(params.userId)]);
+
+      setDisplayName(userData.display_name);
+      setProfilePicture(avatarUrl);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching user data:", error);
+      setError("Failed to load user profile");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -103,44 +88,65 @@ export default function ProfilePage({ params }) {
         setProfilePicture(reader.result);
       };
       reader.readAsDataURL(file);
+      setHasUpdatedAvatar(true);
     }
-    setHasUpdatedAvatar(true);
   };
 
-  const updateProfile = async (userId, displayName, profilePicture) => {
-    const body = {
-      display_name: displayName,
-    };
-    if (hasUpdatedAvatar) {
-      body.profile_picture = profilePicture;
-    } else {
-      body.profile_picture = null;
-    }
-    const response = await fetch(`/api/update-user-info/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update user profile");
-    }
-    //window.location.reload();
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setIsLoading(true);
 
-    updateProfile(params.userId, displayName, profilePicture);
+    try {
+      const body = {
+        display_name: displayName,
+        profile_picture: hasUpdatedAvatar ? profilePicture : null,
+      };
+
+      const response = await fetch(`/api/update-user-info/${params.userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update profile");
+      }
+
+      setSuccess("Profile updated successfully!");
+
+      // Optionally refresh the data
+      await fetchUserData();
+    } catch (err) {
+      setError(err.message || "An error occurred while updating the profile");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Show loading state while checking auth or fetching initial data
+  if (loading || isLoading) {
+    return (
+      <div className="min-h-screen bg-background w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not loading and no user, return null (page will redirect)
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="mx-auto">
-      <Navbar />
       <Card className="max-w-2xl mx-auto border-t-4 border-t-[#e01883] mt-8">
         <CardHeader>
           <CardTitle className="text-2xl text-[#4a82b0]">Your Profile</CardTitle>
