@@ -11,6 +11,7 @@ import { Trophy, ArrowRight, Star, AlertCircle, ChevronDown, ChevronUp, PlayCirc
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "../../../../../contexts/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import Link from "next/link";
 import confetti from "canvas-confetti";
