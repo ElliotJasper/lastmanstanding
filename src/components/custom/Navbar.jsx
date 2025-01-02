@@ -7,7 +7,7 @@ const Navbar = () => {
   const { user, loading, handleLogout } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Show loading state only when loading is true
   }
 
   return (
