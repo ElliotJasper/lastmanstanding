@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
@@ -22,7 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Navbar from "@/components/custom/Navbar";
 
 const generateDates = () => {
   const dates = [];
