@@ -1,13 +1,40 @@
-FROM node:18-alpine
-
+# Build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-COPY packag*.json ./
+# Copy package files
+COPY package*.json ./
+RUN npm ci
 
-RUN npm install
-
+# Copy source code
 COPY . .
 
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# Set node to production mode
+ENV NODE_ENV=production
+
+# Copy package files and install production dependencies only
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy built application from builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.js ./
+
+# Add a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+USER nextjs
+
+# Expose port
 EXPOSE 3000
 
-CMD npm run dev
+# Start the application
+CMD ["npm", "start"]
