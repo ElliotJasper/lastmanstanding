@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY packag*.json ./ 
 
-RUN npm install COPY . . 
+RUN npm install 
+
+COPY . . 
 
 EXPOSE 3000 
 
