@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trophy, Users, Calendar, ArrowRight } from "lucide-react";
-import Navbar from "@/components/custom/Navbar";
 
 export default function LandingPage() {
   const [email, setEmail] = useState("");
@@ -20,8 +19,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#4a82b0] to-[#2c5282]">
-      <Navbar />
-
       <main className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
