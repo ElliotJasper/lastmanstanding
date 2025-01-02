@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "../../../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,8 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Trophy, ArrowRight, Star, AlertCircle, ChevronDown, ChevronUp, PlayCircle } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import Navbar from "@/components/custom/Navbar";
-import { toast } from "react-toastify";
+import { useAuth } from "../../../../../contexts/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
 
 import Link from "next/link";
@@ -151,83 +149,55 @@ export default function TeamSelectionPage({ params }) {
   const [selectedPick, setSelectedPick] = useState(null);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isEliminated, setIsEliminated] = useState(null);
   const [gameWeeks, setGameWeeks] = useState(null);
   const [winner, setWinner] = useState(null);
-  const [user, setUser] = useState(null);
+  const { user, loading } = useAuth();
   const [users, setUsers] = useState();
   const [expandedUser, setExpandedUser] = useState(null);
   const [leagueInfo, setLeagueInfo] = useState(null);
 
   useEffect(() => {
-    const supabase = createClient();
+    if (!loading && !user) {
+      window.location.href = "/login";
+      return;
+    }
 
-    const checkAuth = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      if (user != null) {
-        setUser(user);
-      } else {
-        // If there's no user, redirect to login
-        window.location.href = "/login";
-      }
-    };
+    if (user) {
+      const fetchData = async () => {
+        try {
+          // Fetch league info first
+          const leagueData = await getLeagueInfo(params.leagueId);
+          setLeagueInfo(leagueData);
 
-    checkAuth();
+          // Then fetch other data
+          const [picksData, usersData] = await Promise.all([
+            getPicks(params.userId, params.leagueId),
+            getUsers(params.leagueId),
+          ]);
 
-    const fetchPicks = async () => {
-      try {
-        const data = await getPicks(params.userId, params.leagueId);
+          setPicks(picksData.availablePicks);
+          setIsEliminated(picksData.isEliminated);
+          setGameWeeks(picksData.gameWeeks);
+          setWinner(picksData.winner);
+          setUsers(usersData);
 
-        setPicks(data.availablePicks);
-        setIsEliminated(data.isEliminated);
-        setGameWeeks(data.gameWeeks);
-        setWinner(data.winner);
-
-        if (data.winner) {
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
+          if (picksData.winner) {
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 },
+            });
+          }
+        } catch (err) {
+          setError(err.message);
+          console.error("Error fetching data:", err);
         }
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+      };
 
-    const fetchUsers = async () => {
-      try {
-        const data = await getUsers(params.leagueId);
-        setUsers(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    const fetchLeagueInfo = async () => {
-      try {
-        const data = await getLeagueInfo(params.leagueId);
-        setLeagueInfo(data);
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchLeagueInfo();
-    fetchUsers();
-    fetchPicks();
-  }, [params.userId, params.leagueId]);
-
-  const handleTeamClick = (team, date) => {
-    setSelectedPick({ team, date });
-    setSuccessMessage(null); // Reset success message on new selection
-  };
+      fetchData();
+    }
+  }, [user, loading, params.userId, params.leagueId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -298,13 +268,24 @@ export default function TeamSelectionPage({ params }) {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
+  if (loading || !leagueInfo) {
+    return (
+      <div className="min-h-screen bg-background w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not loading and no user, return null (page will redirect)
+  if (!user) {
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-background w-full">
-      <Navbar />
       <div className="px-8 mt-4">
         <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
