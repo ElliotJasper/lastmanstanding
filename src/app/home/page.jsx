@@ -2,7 +2,7 @@
 
 import { createClient } from "../../../utils/supabase/client";
 import { useState, useEffect } from "react";
-
+import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Calendar, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,8 +68,8 @@ const getPreviousScores = async () => {
 };
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
   const [leagues, setLeagues] = useState([]);
-  const [user, setUser] = useState(null);
   const [fixturesAndResults, setFixturesAndResults] = useState([]);
   const [leagueCode, setLeagueCode] = useState("");
   const [leagueName, setLeagueName] = useState("");
@@ -118,26 +118,16 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    const supabase = createClient();
+    if (!loading && !user) {
+      window.location.href = "/login";
+      return;
+    }
 
-    const checkAuth = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (user != null) {
-        setUser(user);
-        fetchLeagues(user.id);
-        fetchPreviousScores();
-      } else {
-        // If there's no user, redirect to login
-        window.location.href = "/login";
-      }
-    };
-
-    checkAuth();
-  }, []);
+    if (user) {
+      fetchLeagues(user.id);
+      fetchPreviousScores();
+    }
+  }, [user, loading]);
 
   const fetchLeagues = async (userId) => {
     try {
@@ -210,9 +200,19 @@ export default function HomePage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background w-full">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
           <section aria-labelledby="leagues-title">
