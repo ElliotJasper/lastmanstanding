@@ -26,7 +26,7 @@ RUN npm ci --only=production
 # Copy built application from builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.mjs ./
 
 # Add a non-root user
 RUN addgroup --system --gid 1001 nodejs
