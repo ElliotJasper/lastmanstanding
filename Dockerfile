@@ -1,13 +1,31 @@
-FROM node:18-alpine 
+# Dockerfile
+FROM node:18-alpine AS builder
 
-WORKDIR /app 
+WORKDIR /app
 
-COPY packag*.json ./ 
+# Only NEXT_PUBLIC vars needed at build time
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-RUN npm install 
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-COPY . . 
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-EXPOSE 3000 
+FROM node:18-alpine AS runner
+WORKDIR /app
 
-CMD npm run dev
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+ENV NODE_ENV=production
+
+EXPOSE 3000
+CMD ["npm", "start"]
