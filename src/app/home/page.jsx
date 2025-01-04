@@ -214,8 +214,8 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
           <section aria-labelledby="leagues-title">
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="leagues-title" className="text-xl font-semibold text-[#4a82b0] dark:text-[#7ab3e0]">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+              <h2 id="leagues-title" className="text-xl mb-4 md:mb-0 font-semibold text-[#4a82b0] dark:text-[#7ab3e0]">
                 Your Leagues
               </h2>
               <div className="space-x-2">
