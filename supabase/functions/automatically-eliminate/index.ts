@@ -64,6 +64,24 @@ async function eliminateUsers() {
 }
 
 Deno.serve(async (req) => {
+  // Select id 1 from game_week_info table
+  const { data: gameWeekInfo, error: gameWeekInfoError } = await supabase
+    .from("game_week_info")
+    .select("activeWeek")
+    .eq("id", 1);
+  
+  if (gameWeekInfoError) {
+    console.error("Error fetching game week info:", gameWeekInfoError);
+    return;
+  }
+
+  // If activeWeek is false, return early
+  if (gameWeekInfo[0].activeWeek == false) {
+    return new Response(JSON.stringify({ message: "Not an active week." }), { headers: { "Content-Type": "application/json" } });
+  }
+
+
+
   await eliminateUsers();
 
   const data = { message: "Elimination check completed." };
