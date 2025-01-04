@@ -158,6 +158,11 @@ export default function TeamSelectionPage({ params }) {
   const [expandedUser, setExpandedUser] = useState(null);
   const [leagueInfo, setLeagueInfo] = useState(null);
 
+  const handleTeamClick = (team, date) => {
+    setSelectedPick({ team, date });
+    setSuccessMessage(null); // Reset success message on new selection
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       window.location.href = "/login";
