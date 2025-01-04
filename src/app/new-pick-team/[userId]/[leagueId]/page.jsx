@@ -381,32 +381,41 @@ export default function TeamSelectionPage({ params }) {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[400px]">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-8">
-                      {picks.map((team) => (
-                        <TooltipProvider key={team.team}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Card
-                                className={`cursor-pointer transition-all ${
-                                  selectedPick?.team === team.team ? "ring-2 ring-[#e01883]" : ""
-                                }`}
-                                onClick={() => handleTeamClick(team.team, team.date)}
-                              >
-                                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                                  <Avatar className="h-12 w-12 mb-2">
-                                    <AvatarImage src={team.teamImg} alt={team.team} />
-                                    <AvatarFallback className="bg-[#4a82b0] text-white">{team.team[0]}</AvatarFallback>
-                                  </Avatar>
-                                  <h3 className="font-semibold text-sm">{team.team}</h3>
-                                  <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
-                                </CardContent>
-                              </Card>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
+                    {picks && picks.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-8">
+                        {picks.map((team) => (
+                          <TooltipProvider key={team.team}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Card
+                                  className={`cursor-pointer transition-all ${
+                                    selectedPick?.team === team.team ? "ring-2 ring-[#e01883]" : ""
+                                  }`}
+                                  onClick={() => handleTeamClick(team.team, team.date)}
+                                >
+                                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                                    <Avatar className="h-12 w-12 mb-2">
+                                      <AvatarImage src={team.teamImg} alt={team.team} />
+                                      <AvatarFallback className="bg-[#4a82b0] text-white">
+                                        {team.team[0]}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <h3 className="font-semibold text-sm">{team.team}</h3>
+                                    <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
+                                  </CardContent>
+                                </Card>
+                              </TooltipTrigger>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full p-8">
+                        <p className="text-sm text-muted-foreground">No picks available.</p>
+                      </div>
+                    )}
                   </ScrollArea>
+
                   <div className="mt-6 text-center">
                     <Button
                       onClick={handleSubmit}
