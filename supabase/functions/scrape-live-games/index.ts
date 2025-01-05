@@ -72,10 +72,9 @@ const generateFormattedDatesUntilSunday = () => {
   }
   return formattedDates;
 };
-const LEAGUES = ["premier-league", "championship", "league-one"];
+const LEAGUES = ["premier-league", "championship", "league-one", "league-two"];
 // Initialize Supabase client
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
-
 
 async function scrapeLeagueScores(league, todayDate) {
   let games = [];
