@@ -72,55 +72,72 @@ const generateFormattedDatesUntilSunday = () => {
   }
   return formattedDates;
 };
-
+const LEAGUES = ["premier-league", "championship", "league-one"];
 // Initialize Supabase client
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
-async function scrapeTodaysScores() {
+
+async function scrapeLeagueScores(league, todayDate) {
   let games = [];
-  let total = 0;
-  const todayDate = generateFormattedDatesUntilSunday()[0].formatDateAPI;
-  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=${todayDate}&selectedStartDate=${todayDate}&todayDate=${todayDate}&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3Apremier-league&useSdApi=false`;
+  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=${todayDate}&selectedStartDate=${todayDate}&todayDate=${todayDate}&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3A${league}&useSdApi=false`;
 
-  const response = await fetch(requestUrl);
-  const data = await response.json();
-  let path = data.eventGroups;
+  try {
+    const response = await fetch(requestUrl);
+    const data = await response.json();
+    let path = data.eventGroups;
 
-  for (let eventGroup of path) {
-    path = eventGroup.secondaryGroups[0].events;
-    for (let event of path) {
-      total++;
-      let game = {
-        date: event.date.iso,
-        homeTeam: event.home.fullName,
-        homeScore: event.home.score ? parseInt(event.home.score) : 0,
-        awayTeam: event.away.fullName,
-        awayScore: event.away.score ? parseInt(event.away.score) : 0,
-        eventProgress: event.status,
-      };
+    for (let eventGroup of path) {
+      path = eventGroup.secondaryGroups[0].events;
+      for (let event of path) {
+        let game = {
+          league,
+          date: event.date.iso,
+          homeTeam: event.home.fullName,
+          homeScore: event.home.score ? parseInt(event.home.score) : 0,
+          awayTeam: event.away.fullName,
+          awayScore: event.away.score ? parseInt(event.away.score) : 0,
+          eventProgress: event.status,
+        };
 
-      // Determine game outcome
-      if (event.winner && event.winner === "draw") {
-        game.homeOutcome = "draw";
-        game.awayOutcome = "draw";
-      } else if (event.winner && event.winner === "home") {
-        game.homeOutcome = "win";
-        game.awayOutcome = "loss";
-      } else if (event.winner && event.winner === "away") {
-        game.homeOutcome = "loss";
-        game.awayOutcome = "win";
-      } else {
-        game.homeOutcome = "unknown";
-        game.awayOutcome = "unknown";
+        // Determine game outcome
+        if (event.winner && event.winner === "draw") {
+          game.homeOutcome = "draw";
+          game.awayOutcome = "draw";
+        } else if (event.winner && event.winner === "home") {
+          game.homeOutcome = "win";
+          game.awayOutcome = "loss";
+        } else if (event.winner && event.winner === "away") {
+          game.homeOutcome = "loss";
+          game.awayOutcome = "win";
+        } else {
+          game.homeOutcome = "unknown";
+          game.awayOutcome = "unknown";
+        }
+        games.push(game);
       }
-      games.push(game);
     }
+  } catch (error) {
+    console.error(`Error scraping ${league}:`, error);
   }
 
-  if (games.length > 0) {
-    await saveScoresToDatabase(games);
+  return games;
+}
+
+async function scrapeTodaysScores() {
+  let allGames = [];
+  const todayDate = generateFormattedDatesUntilSunday()[0].formatDateAPI;
+
+  // Scrape each league
+  for (const league of LEAGUES) {
+    const games = await scrapeLeagueScores(league, todayDate);
+    console.log(`Scraped ${games.length} games from ${league}`);
+    allGames = [...allGames, ...games];
+  }
+
+  if (allGames.length > 0) {
+    await saveScoresToDatabase(allGames);
   } else {
-    console.log("No games today");
+    console.log("No games found in any league");
   }
 }
 
@@ -128,12 +145,15 @@ async function saveScoresToDatabase(scores) {
   // Retrieve the current game records from the database for comparison
   const { data: existingGames, error: fetchError } = await supabase
     .from("games")
-    .select("date, homeTeam, awayTeam, eventProgress")
+    .select("homeTeam, awayTeam, eventProgress")
     .in(
-      "date",
-      scores.map((score) => new Date(score.date).toISOString())
+      "homeTeam",
+      scores.map((score) => score.homeTeam)
+    )
+    .in(
+      "awayTeam",
+      scores.map((score) => score.awayTeam)
     );
-  console.log("date", existingGames[0].date);
 
   if (fetchError) {
     console.error("Error fetching existing games:", fetchError);
@@ -142,21 +162,18 @@ async function saveScoresToDatabase(scores) {
 
   // Compare eventProgress and call TestFunction if transitioning to 'PostEvent'
   scores.forEach((score) => {
-    const scoreDate = new Date(score.date).toISOString().slice(0, -5);
     const existingGame = existingGames.find(
-      (g) => g.date === scoreDate && g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam
+      (g) => g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam
     );
 
     if (existingGame) {
       if (existingGame.eventProgress !== "PostEvent" && score.eventProgress === "PostEvent") {
-        console.log("PostEvent detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
+        console.log(`PostEvent detected:`, score.homeTeam, "vs", score.awayTeam);
         TestFunction(score);
       }
-    }
 
-    if (existingGame) {
       if (existingGame.eventProgress !== "Postponed" && score.eventProgress === "Postponed") {
-        console.log("Postponed detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
+        console.log(`Postponed detected:`, score.homeTeam, "vs", score.awayTeam);
         EliminateFunction(score);
       }
     }
@@ -165,6 +182,7 @@ async function saveScoresToDatabase(scores) {
   // Perform upsert into the database using Supabase
   const { error } = await supabase.from("games").upsert(
     scores.map((score) => ({
+      league: score.league,
       date: new Date(score.date),
       homeTeam: score.homeTeam,
       homeScore: score.homeScore,
@@ -177,7 +195,7 @@ async function saveScoresToDatabase(scores) {
       updated_at: new Date(),
     })),
     {
-      onConflict: ["date", "homeTeam", "awayTeam"],
+      onConflict: ["homeTeam", "awayTeam"], // Only use team combinations for uniqueness
     }
   );
 
