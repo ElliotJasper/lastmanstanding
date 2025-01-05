@@ -81,7 +81,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 // Define and serve the function
 Deno.serve(async (req) => {
-  await isEnoughGames(); // Trigger the winner marking process once a day
+  await isEnoughGames();
 
   const data = {
     message: `Winner check completed.`,
