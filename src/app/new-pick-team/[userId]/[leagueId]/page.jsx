@@ -351,7 +351,7 @@ export default function TeamSelectionPage({ params }) {
                       </ul>
                     </div>
                     <div className="pt-4">
-                      <Link href="/new-home">
+                      <Link href="/home">
                         <Button className="bg-[#4a82b0] hover:bg-[#4a82b0]/90">
                           Join New League <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
