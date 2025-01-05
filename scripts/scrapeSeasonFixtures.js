@@ -1,8 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 async function scrapeScores() {
   let games = [];
@@ -24,6 +21,7 @@ async function scrapeScores() {
         awayTeam: event.away.fullName,
         awayScore: event.away.score ? parseInt(event.away.score) : 0,
         eventProgress: event.status,
+        league: event.tournament.name,
       };
 
       // Determine game outcome
@@ -52,28 +50,31 @@ async function scrapeScores() {
 }
 
 async function saveScoresToDatabase(scores) {
-  // Perform upsert into the database
+  // Format the data for upsert
+  const formattedScores = scores.map((score) => ({
+    date: new Date(score.date),
+    homeTeam: score.homeTeam,
+    homeScore: score.homeScore,
+    homeOutcome: score.homeOutcome,
+    awayTeam: score.awayTeam,
+    awayScore: score.awayScore,
+    awayOutcome: score.awayOutcome,
+    eventProgress: score.eventProgress,
+    league: score.league, // Add the league field
+    created_at: new Date(),
+    updated_at: new Date(),
+  }));
 
-  const { error } = await supabase.from("games").upsert(
-    scores.map((score) => ({
-      date: new Date(score.date),
-      homeTeam: score.homeTeam,
-      homeScore: score.homeScore,
-      homeOutcome: score.homeOutcome,
-      awayTeam: score.awayTeam,
-      awayScore: score.awayScore,
-      awayOutcome: score.awayOutcome,
-      eventProgress: score.eventProgress,
-      created_at: new Date(),
-      updated_at: new Date(),
-    })),
-    {
-      onConflict: ["date", "homeTeam", "awayTeam"], // Specify the unique constraint columns
-    }
-  );
+  // Perform upsert with update on conflict
+  const { error } = await supabase.from("games").upsert(formattedScores, {
+    onConflict: "homeTeam,awayTeam", // Specify conflict columns as a comma-separated string
+    returning: true, // Optional: returns the affected rows
+    ignoreDuplicates: false, // We want to update on conflicts, not ignore them
+  });
 
   if (error) {
     console.error("Error upserting games:", error);
+    throw error;
   } else {
     console.log("Scores upserted successfully!");
   }
