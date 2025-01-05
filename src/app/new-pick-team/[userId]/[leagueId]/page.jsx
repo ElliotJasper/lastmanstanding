@@ -1,5 +1,6 @@
 "use client";
 
+import LeaguePicksDisplay from "@/components/custom/LeaguePicksDisplay";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -380,55 +381,13 @@ export default function TeamSelectionPage({ params }) {
                   <CardTitle className="text-2xl text-[#4a82b0]">Select Your Team</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[400px]">
-                    {picks && picks.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-8">
-                        {picks.map((team) => (
-                          <TooltipProvider key={team.team}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Card
-                                  className={`cursor-pointer transition-all ${
-                                    selectedPick?.team === team.team ? "ring-2 ring-[#e01883]" : ""
-                                  }`}
-                                  onClick={() => handleTeamClick(team.team, team.date)}
-                                >
-                                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                                    <Avatar className="h-12 w-12 mb-2">
-                                      <AvatarImage src={team.teamImg} alt={team.team} />
-                                      <AvatarFallback className="bg-[#4a82b0] text-white">
-                                        {team.team[0]}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <h3 className="font-semibold text-sm">{team.team}</h3>
-                                    <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
-                                    <div className="mt-2 px-2 py-1 bg-[#4a82b0]/10 rounded-full">
-                                      <p className="text-xs text-[#4a82b0] font-medium">{team.league}</p>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </TooltipTrigger>
-                            </Tooltip>
-                          </TooltipProvider>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-full p-8">
-                        <p className="text-sm text-muted-foreground">No picks available.</p>
-                      </div>
-                    )}
-                  </ScrollArea>
-
-                  <div className="mt-6 text-center">
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={!selectedPick}
-                      className="bg-[#4a82b0] hover:bg-[#4a82b0]/90"
-                    >
-                      Submit Pick
-                    </Button>
-                  </div>
-                  {successMessage && <div className="text-green-500 mt-4">{successMessage}</div>}
+                  <LeaguePicksDisplay
+                    picks={picks}
+                    selectedPick={selectedPick}
+                    onTeamClick={handleTeamClick}
+                    onSubmit={handleSubmit}
+                    successMessage={successMessage}
+                  />
                 </CardContent>
               </Card>
             )}
