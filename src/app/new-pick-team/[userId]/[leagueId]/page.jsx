@@ -204,7 +204,7 @@ export default function TeamSelectionPage({ params }) {
 
       fetchData();
     }
-  }, [user, loading, params.userId, params.leagueId]);
+  }, [loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
