@@ -72,7 +72,6 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
                           <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                             <Avatar className="h-12 w-12 mb-2">
                               <AvatarImage src={team.teamImg} alt={team.team} />
-                              <AvatarFallback className="bg-[#4a82b0] text-white">{team.team[0]}</AvatarFallback>
                             </Avatar>
                             <h3 className="font-semibold text-sm">{team.team}</h3>
                             <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
