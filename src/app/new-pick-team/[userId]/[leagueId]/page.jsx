@@ -156,7 +156,7 @@ export default function TeamSelectionPage({ params }) {
   const [winner, setWinner] = useState(null);
   const { user, loading } = useAuth();
   const [users, setUsers] = useState();
-  const [expandedUser, setExpandedUser] = useState(null);
+  const [expandedUsers, setExpandedUsers] = useState(new Set());
   const [leagueInfo, setLeagueInfo] = useState(null);
 
   const handleTeamClick = (team, date) => {
@@ -239,7 +239,15 @@ export default function TeamSelectionPage({ params }) {
   };
 
   const toggleUserExpansion = (userId) => {
-    setExpandedUser(expandedUser === userId ? null : userId);
+    setExpandedUsers((prevExpandedUsers) => {
+      const newExpandedUsers = new Set(prevExpandedUsers);
+      if (newExpandedUsers.has(userId)) {
+        newExpandedUsers.delete(userId);
+      } else {
+        newExpandedUsers.add(userId);
+      }
+      return newExpandedUsers;
+    });
   };
 
   const handleActivate = async () => {
@@ -407,7 +415,7 @@ export default function TeamSelectionPage({ params }) {
                             <CollapsibleTrigger asChild>
                               <div
                                 className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleUserExpansion(user.id)}
+                                onClick={() => toggleUserExpansion(user.user_id)}
                               >
                                 <div className="flex items-center space-x-3">
                                   <Avatar className="h-12 w-12">
@@ -429,7 +437,7 @@ export default function TeamSelectionPage({ params }) {
                                       Active
                                     </Badge>
                                   )}
-                                  {expandedUser === user.id ? (
+                                  {expandedUsers.has(user.user_id) ? (
                                     <ChevronUp className="h-4 w-4" />
                                   ) : (
                                     <ChevronDown className="h-4 w-4" />
@@ -446,7 +454,6 @@ export default function TeamSelectionPage({ params }) {
                                       key={pick.teamName}
                                       className={`text-xs p-1 rounded-md flex items-center justify-start bg-blue-100`}
                                     >
-                                      {/* <span className="font-medium w-6">{pick.gameweek}</span> */}
                                       <span className="font-bold w-48 truncate">{pick.teamName}</span>
                                       <span className="w-32 truncate">
                                         {new Date(pick.date).toLocaleDateString("en-US", {
