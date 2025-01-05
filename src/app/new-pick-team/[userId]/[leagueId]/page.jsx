@@ -126,7 +126,7 @@ function timeUntilThursdayMidnight() {
   const currentDay = now.getDay();
 
   // Calculate how many days until the next Thursday
-  const daysUntilThursday = (4 - currentDay + 7) % 7 || 7;
+  const daysUntilThursday = (5 - currentDay + 7) % 7 || 7;
 
   // Create the target Thursday midnight date
   const thursdayMidnight = new Date(now);
