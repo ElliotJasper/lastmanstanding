@@ -24,7 +24,7 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
 
   // Set the active tab when leagues are available
   useEffect(() => {
-    if (leagues.length > 0) {
+    if (!activeTab && leagues.length > 0) {
       const premierLeague = leagues.find(
         (league) =>
           league === "Premier League" ||
@@ -33,7 +33,7 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
       );
       setActiveTab(premierLeague || leagues[0]);
     }
-  }, [leagues]);
+  }, [leagues, activeTab]);
 
   // Don't render until we have an active tab
   if (!activeTab) {
