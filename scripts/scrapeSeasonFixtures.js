@@ -4,8 +4,13 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 async function scrapeScores() {
   let games = [];
   let total = 0;
-  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=2025-08-01&selectedStartDate=2024-08-01&todayDate=2024-09-08&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3Apremier-league&useSdApi=false`;
+  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=2025-08-01&selectedStartDate=2024-07-01&todayDate=2025-01-05&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3Aleague-two&useSdApi=false`;
   const response = await fetch(requestUrl);
+  if (!response.ok) {
+    console.error(`HTTP Error: ${response.status} ${response.statusText}`);
+    console.error(await response.text()); // Log the full response body for debugging
+    return;
+  }
   const data = await response.json();
   let path = data.eventGroups;
 
@@ -13,6 +18,11 @@ async function scrapeScores() {
     path = eventGroup.secondaryGroups[0].events;
 
     for (let event of path) {
+      // Skip games with "Postponed" status
+      if (event.status === "Postponed") {
+        continue; // Skip this event and move to the next one
+      }
+
       total++;
       let game = {
         date: event.date.iso,
