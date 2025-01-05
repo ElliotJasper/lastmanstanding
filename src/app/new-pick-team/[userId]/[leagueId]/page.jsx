@@ -455,19 +455,6 @@ export default function TeamSelectionPage({ params }) {
                                           day: "numeric",
                                         })}
                                       </span>
-                                      {/* <span className="w-24 truncate">{pick.opponent}</span> */}
-                                      {/* <Badge 
-                                     variant={pick.result === "W" ? "default" : pick.result === "L" ? "destructive" : "secondary"}
-                                     className={`text-xs px-1 py-0 ${
-                                       pick.result === "W" 
-                                         ? "bg-green-500" 
-                                         : pick.result === "L" 
-                                         ? "bg-red-500" 
-                                         : "bg-yellow-500"
-                                     }`}
-                                   >
-                                     {pick.result}
-                                   </Badge> */}
                                     </li>
                                   ))}
                                 </ul>
