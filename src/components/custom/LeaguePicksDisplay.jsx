@@ -75,6 +75,9 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
                             </Avatar>
                             <h3 className="font-semibold text-sm">{team.team}</h3>
                             <p className="text-xs text-muted-foreground">vs {team.opponent}</p>
+                            <div className="mt-2 px-2 py-1 bg-[#4a82b0]/10 rounded-full">
+                              <p className="text-xs text-[#4a82b0] font-medium">{team.league}</p>
+                            </div>
                           </CardContent>
                         </Card>
                       </TooltipTrigger>
