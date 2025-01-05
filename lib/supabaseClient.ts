@@ -120,11 +120,12 @@ export class SupabaseClient {
     const dates = DateHandler.generateDaysFridayToMonday();
 
     const { data: games, error: picksError } = await this.serviceClient
-      .from("games")
-      .select("homeTeam, awayTeam, date, eventProgress")
-      .gt("date", dates[0])
-      .lte("date", dates[dates.length - 1])
-      .order("date", { ascending: true });
+    .from("games")
+    .select("homeTeam, awayTeam, date, eventProgress, league")
+    .gt("date", dates[0])
+    .lte("date", dates[dates.length - 1])
+    .eq("eventProgress", "PreEvent") // Filter for matchStatus being PreEvent
+    .order("date", { ascending: true });
       
     if (picksError) {
       console.error("Picks Error Details:", picksError);
@@ -136,11 +137,13 @@ export class SupabaseClient {
         team: game.homeTeam,
         date: game.date,
         opponent: game.awayTeam,
+        league: game.league,
       },
       {
         team: game.awayTeam,
         date: game.date,
         opponent: game.homeTeam,
+        league: game.league,
       },
     ]);
 
