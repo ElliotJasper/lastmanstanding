@@ -7,6 +7,9 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
+    const token_hash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    
     // If "next" is in param, use it as the redirect URL
     const next = searchParams.get("next") ?? "/";
     const isLocalEnv = process.env.NODE_ENV === "development";
