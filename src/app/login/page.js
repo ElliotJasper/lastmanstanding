@@ -19,7 +19,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("HI");
+
     const supabase = await createClient();
     if (email && password) {
       const { data, error } = await supabase.auth.signInWithPassword({
