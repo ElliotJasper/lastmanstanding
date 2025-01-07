@@ -1,34 +1,37 @@
-import { supabase } from "../../../utils/supabase/server";
+"use client";
+
+import { createClient } from "../../../utils/supabase/client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { login } from "./action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const router = useRouter();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Here you would typically handle the login logic
-    // For now, we'll just show a success message
+    console.log("HI");
+    const supabase = await createClient();
     if (email && password) {
-      alert("Login successful!");
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (data.user) {
+        router.push("/");
+      }
     } else {
       setError("Please enter both email and password");
     }
-  };
-
-  const handleGoogleLogin = () => {
-    // Here you would typically handle Google login
-    alert("Google login clicked");
   };
 
   return (
@@ -49,6 +52,8 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 className="border-[#4a82b0] focus-visible:ring-[#e01883]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} // Update email state
               />
             </div>
             <div className="space-y-2">
@@ -59,6 +64,8 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 className="border-[#4a82b0] focus-visible:ring-[#e01883]"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)} // Update password state
               />
             </div>
             {/* {error && (
@@ -66,7 +73,7 @@ export default function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )} */}
-            <Button type="submit" className="w-full bg-[#4a82b0] hover:bg-[#4a82b0]/90">
+            <Button onClick={handleLogin} type="submit" className="w-full bg-[#4a82b0] hover:bg-[#4a82b0]/90">
               Login
             </Button>
           </form>
