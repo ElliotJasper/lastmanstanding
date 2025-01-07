@@ -9,23 +9,10 @@ export async function GET(request) {
     const code = searchParams.get("code");
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type");
-    
+
     // If "next" is in param, use it as the redirect URL
     const next = searchParams.get("next") ?? "/";
     const isLocalEnv = process.env.NODE_ENV === "development";
-
-    if (!code) {
-      console.error("No code provided in callback");
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/auth-code-error`);
-    }
-
-    const supabase = await createClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (error) {
-      console.error("Error exchanging code for session:", error);
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/auth-code-error`);
-    }
 
     const forwardedHost = request.headers.get("x-forwarded-host"); // Original origin before load balancer
     let baseUrl;
@@ -70,6 +57,6 @@ export async function GET(request) {
     return NextResponse.redirect(`${baseUrl}${next}`);
   } catch (error) {
     console.error("Unexpected error in callback:", error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/auth-code-error`);
+    return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
   }
 }
