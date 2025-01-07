@@ -41,6 +41,29 @@ export async function GET(request) {
       baseUrl = `https://${request.headers.get("host")}`;
     }
 
+    const supabase = await createClient();
+
+    if (token_hash && type == "email") {
+      const { error } = await supabase.auth.verifyOtp({
+        type,
+        token_hash,
+      });
+
+      if (error) {
+        console.error("Error exchanging code for session:", error);
+        return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
+      } else {
+        return NextResponse.redirect(next);
+      }
+    } else if (code) {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+      if (error) {
+        console.error("Error exchanging code for session:", error);
+        return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
+      }
+    }
+
     return NextResponse.redirect(`${baseUrl}${next}`);
   } catch (error) {
     console.error("Unexpected error in callback:", error);
