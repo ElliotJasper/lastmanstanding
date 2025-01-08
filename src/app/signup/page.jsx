@@ -40,10 +40,6 @@ export default function SignUpPage() {
 
     setIsLoading(true);
 
-    // Here you would typically send the signup data to your backend
-    console.log({ email, password });
-
-    // Simulate API call
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
