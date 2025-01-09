@@ -10,5 +10,5 @@ export async function POST(req, { params }) {
   }
 
   await supabaseClient.activateLeague(leagueId, userData.id);
-  return new Response({ status: 200 });
+  return new Response(JSON.stringify({ status: 200 }));
 }
