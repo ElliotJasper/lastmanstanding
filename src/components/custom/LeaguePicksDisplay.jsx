@@ -56,18 +56,19 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
   }
 
   const LeagueSelector = isMobile ? (
-    <Select value={activeTab} onValueChange={setActiveTab}>
-      <SelectTrigger className="w-full mb-4">
-        <SelectValue placeholder="Select a league" />
-      </SelectTrigger>
-      <SelectContent>
+    <div className="w-full mb-4">
+      <select
+        value={activeTab}
+        onChange={(e) => setActiveTab(e.target.value)}
+        className="w-full p-2 border rounded-lg bg-white text-sm"
+      >
         {leagues.map((league) => (
-          <SelectItem key={league} value={league}>
+          <option key={league} value={league}>
             {league}
-          </SelectItem>
+          </option>
         ))}
-      </SelectContent>
-    </Select>
+      </select>
+    </div>
   ) : (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="w-full flex bg-[#4a82b0]/10 p-1 rounded-lg">
