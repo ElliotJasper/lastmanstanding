@@ -99,16 +99,7 @@ export default function SignUpPage() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col">
-          <div className="text-sm text-muted-foreground text-center">
-            By signing up, you agree to our{" "}
-            <Link href="/terms" className="underline text-[#4a82b0] hover:text-[#4a82b0]/90">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="underline text-[#4a82b0] hover:text-[#4a82b0]/90">
-              Privacy Policy
-            </Link>
-          </div>
+          <div className="text-sm text-muted-foreground text-center"></div>
           <div className="mt-4 text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="text-[#4a82b0] hover:underline">
