@@ -65,6 +65,6 @@ export async function POST(req, { params }) {
   }
 
   // Update profile info in your database
-  const userInfo = await supabaseClient.updateProfile(userId, formData.display_name);
+  const userInfo = await supabaseClient.updateProfile(userData.id, formData.display_name);
   return new Response(JSON.stringify({ status: 200 }));
 }
