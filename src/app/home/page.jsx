@@ -72,6 +72,8 @@ export default function HomePage() {
   const [leagueCode, setLeagueCode] = useState("");
   const [leagueName, setLeagueName] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isCreateLeagueDialogOpen, setIsCreateLeagueDialogOpen] = useState(false); // State to manage create league dialog open state
+  const [isJoinLeagueDialogOpen, setIsJoinLeagueDialogOpen] = useState(false); // State to manage join league dialog open state
 
   const getVisibleDates = () => {
     const allDates = dates;
@@ -159,7 +161,9 @@ export default function HomePage() {
       });
 
       if (response.ok) {
-        window.location.reload();
+        // Fetch the updated list of leagues
+        await fetchLeagues(user.id);
+        setIsJoinLeagueDialogOpen(false);
       } else {
         // Handle HTTP errors by parsing the response error message
         const errorData = await response.json();
@@ -189,7 +193,9 @@ export default function HomePage() {
       });
 
       if (response.ok) {
-        window.location.reload();
+        // Fetch the updated list of leagues
+        await fetchLeagues(user.id);
+        setIsCreateLeagueDialogOpen(false); // Close the dialog
       } else {
         console.error("Failed to create league");
       }
@@ -219,7 +225,7 @@ export default function HomePage() {
                 Your Leagues
               </h2>
               <div className="space-x-2">
-                <Dialog>
+                <Dialog open={isCreateLeagueDialogOpen} onOpenChange={setIsCreateLeagueDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline">Create League</Button>
                   </DialogTrigger>
@@ -244,7 +250,7 @@ export default function HomePage() {
                     </form>
                   </DialogContent>
                 </Dialog>
-                <Dialog>
+                <Dialog open={isJoinLeagueDialogOpen} onOpenChange={setIsJoinLeagueDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline">Join League</Button>
                   </DialogTrigger>
