@@ -19,7 +19,7 @@ const Navbar = () => {
         <div className="flex space-x-4">
           {user ? (
             <>
-              <Link href={`/profile/${user.id}`}>
+              <Link href={`/profile`}>
                 <Button className="bg-[#4a82b0] hover:bg-[#3b74a2] text-white">Profile</Button>
               </Link>
               <Button className="bg-[#4a82b0] hover:bg-[#3b74a2] text-white" onClick={handleLogout}>
