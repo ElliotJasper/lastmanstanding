@@ -179,9 +179,13 @@ export default function HomePage() {
 
   const handleCreateLeague = async (e) => {
     e.preventDefault();
-    const formData = {
-      leagueName,
-    };
+
+    if (!leagueName.trim()) {
+      alert("Please enter a name for the league.");
+      return;
+    }
+
+    const formData = { leagueName };
 
     try {
       const response = await fetch("/api/create-league", {
@@ -197,9 +201,12 @@ export default function HomePage() {
         await fetchLeagues(user.id);
         setIsCreateLeagueDialogOpen(false); // Close the dialog
       } else {
-        console.error("Failed to create league");
+        const errorData = await response.json();
+        alert(`Failed to create league: ${errorData.message || "Unknown error"}`);
+        console.error("Failed to create league:", errorData);
       }
     } catch (error) {
+      alert(`Failed to create league: ${error.message}`);
       console.error("Error:", error);
     }
   };
