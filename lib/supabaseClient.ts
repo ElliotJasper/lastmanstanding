@@ -281,7 +281,7 @@ export class SupabaseClient {
    * Set the league as active
    * @param leagueId
    */
-  async activateLeague(leagueId: number, clientId: string): Promise<{ error?: string }> {
+  async activateLeague(leagueId: number, clientId: string): Promise<any> {
     const isWeekendPeriod = DateHandler.isWeekendPeriod();
     if (isWeekendPeriod) {
       return { error: "Cannot activate league during the weekend period" };
@@ -300,7 +300,7 @@ export class SupabaseClient {
       return { error: `Error activating league: ${leagueError.message}` };
     }
   
-    return {};
+    return { success: `League ${leagueId} has been activated` };
   }
 
   /**
