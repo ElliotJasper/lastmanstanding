@@ -478,4 +478,17 @@ export class SupabaseClient {
 
     return league.user_id === userId;
   }
+
+  async getGameWeekInfo(): Promise<any> {
+    const { data: gameWeekInfo, error: gameWeekInfoError } = await this.serviceClient
+      .from("game_week_info")
+      .select("activeWeek")
+      .eq("id", 1);
+
+    if (gameWeekInfoError) {
+      throw new Error(`Error fetching game week info: ${gameWeekInfoError.message}`);
+    }
+
+    return gameWeekInfo[0].activeWeek;
+  }
 }
