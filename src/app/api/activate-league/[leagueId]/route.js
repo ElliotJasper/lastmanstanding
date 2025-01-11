@@ -9,6 +9,10 @@ export async function POST(req, { params }) {
     return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
   }
 
-  await supabaseClient.activateLeague(leagueId, userData.id);
+  const response = await supabaseClient.activateLeague(leagueId, userData.id);
+  console.log(response);
+  if (response.error) {
+    return new Response(JSON.stringify({ error: "League cannot be activated during pick time" }), { status: 400 });
+  }
   return new Response(JSON.stringify({ status: 200 }));
 }
