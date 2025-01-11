@@ -266,13 +266,14 @@ export default function TeamSelectionPage({ params }) {
           position: "top-center",
           autoClose: 2000,
         });
-        return;
+      } else {
+        toast.success("League activated successfully!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
       }
-
-      toast.success("League activated successfully!", {
-        position: "top-center",
-        autoClose: 2000,
-      });
+      const leagueData = await getLeagueInfo(params.leagueId);
+      setLeagueInfo(leagueData);
     } catch (error) {
       toast.error("Cannot activate league during gameplay time", {
         position: "top-center",
