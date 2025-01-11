@@ -6,27 +6,37 @@ export class DateHandler {
   static generateDaysFridayToMonday(): string[] {
     const formattedDates: string[] = [];
     const currentDate = new Date();
-    
+    let startDate: Date;
+    let endDate: Date;
+
     // Calculate days until next Friday
     let daysUntilFriday = 5 - currentDate.getDay();
     if (daysUntilFriday <= 0) {
         daysUntilFriday += 7; // If we're past Friday, get next Friday
     }
-    
-    // Set start date (Friday)
-    const startDate = new Date(currentDate);
-    startDate.setDate(currentDate.getDate() + daysUntilFriday);
+
+    // Check if the current day is Friday, Saturday, Sunday, or Monday
+    if (currentDate.getDay() >= 5 || currentDate.getDay() === 0) {
+        // Set start date (current Friday)
+        startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() - (currentDate.getDay() - 5));
+    } else {
+        // Set start date (next Friday)
+        startDate = new Date(currentDate);
+        startDate.setDate(currentDate.getDate() + daysUntilFriday);
+    }
+
     startDate.setHours(0, 0, 0, 0);
     formattedDates.push(startDate.toISOString());
-    
+
     // Set end date (following Monday)
-    const endDate = new Date(startDate);
+    endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 3); // Add 3 days to get to Monday
     endDate.setHours(23, 59, 59, 999);
     formattedDates.push(endDate.toISOString());
-    
+
     return formattedDates;
-  }
+}
 
   /**
    * Generates an array of dates from today until the previous Sunday
