@@ -263,22 +263,20 @@ export default function TeamSelectionPage({ params }) {
 
       if (data.error) {
         toast.error(data.error, {
-          position: "top-center", // Correct position value
-          autoClose: 3000, // Auto close in 3 seconds
+          position: "top-center",
+          autoClose: 2000,
         });
         return;
       }
 
       toast.success("League activated successfully!", {
-        position: "top-center", // Correct position value
-        autoClose: 3000,
+        position: "top-center",
+        autoClose: 2000,
       });
-
-      window.location.reload();
     } catch (error) {
       toast.error("Cannot activate league during gameplay time", {
-        position: "top-center", // Correct position value
-        autoClose: 3000,
+        position: "top-center",
+        autoClose: 2000,
       });
     }
   };
