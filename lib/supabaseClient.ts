@@ -436,6 +436,13 @@ export class SupabaseClient {
    * @param date
    */
   async submitPick(userId: string, leagueId: number, teamName: string, date: string): Promise<void> {
+    const gameWeekInfo = await this.getGameWeekInfo(); 
+    console.log("Game Week Info: ", gameWeekInfo);
+
+    if (gameWeekInfo == false) {
+      throw new Error("Not an active week.");
+    }
+
     const { error: pickError } = await this.serviceClient.from("picks").insert({
       user_id: userId,
       league_id: leagueId,
@@ -450,7 +457,7 @@ export class SupabaseClient {
     // Update the "league_users" table to set "canpick" to false for the given user_id and league_id
     const { error: updateError } = await this.serviceClient
       .from("league_users")
-      .update({ canPick: false })
+      .update({ canPick: false }) 
       .eq("user_id", userId)
       .eq("league_id", leagueId);
 
