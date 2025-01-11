@@ -48,11 +48,7 @@ const LeaguePicksDisplay = ({ picks, selectedPick, onTeamClick, onSubmit, succes
 
   // Don't render until we have an active tab
   if (!activeTab) {
-    return (
-      <div className="flex items-center justify-center h-[400px]">
-        <div className="w-8 h-8 border-4 border-[#4a82b0] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div className="flex items-center justify-center h-[400px]">There are no more games to select</div>;
   }
 
   const LeagueSelector = isMobile ? (
