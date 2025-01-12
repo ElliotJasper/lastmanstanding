@@ -22,7 +22,7 @@ async function markLastUserAsWinner() {
     // Fetch all users of the current league who are not eliminated
     const { data: activeUsers, error: activeUsersError } = await supabase
       .from("league_users")
-      .select("user_id, id")
+      .select("user_id, id, canPick")
       .eq("league_id", league.id)
       .eq("isEliminated", false);
 
@@ -66,6 +66,10 @@ async function markLastUserAsWinner() {
 
       // Check if all games for their picks are completed
       let allGamesCompleted = true;
+
+      if (lastUser.canPick == true) {
+        allGamesCompleted = false;
+      }
 
       for (const pick of picks) {
         // Query games table for home team match
