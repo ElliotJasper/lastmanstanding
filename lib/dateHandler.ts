@@ -9,27 +9,29 @@ export class DateHandler {
     let startDate: Date;
     let endDate: Date;
 
-    // Calculate days until next Friday
-    let daysUntilFriday = 5 - currentDate.getDay();
-    if (daysUntilFriday <= 0) {
-        daysUntilFriday += 7; // If we're past Friday, get next Friday
-    }
+    // Determine if we're in the current Friday-Monday period
+    const currentDay = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+    const isInCurrentPeriod = currentDay >= 5 || currentDay === 0 || currentDay === 1;
 
-    // Check if the current day is Friday, Saturday, Sunday, or Monday
-    if (currentDate.getDay() >= 5 || currentDate.getDay() === 0) {
-        // Set start date (current Friday)
+    if (isInCurrentPeriod) {
+        // Calculate back to the most recent Friday
         startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() - (currentDate.getDay() - 5));
+        const daysToSubtract = currentDay === 0 ? 2 : // If Sunday, go back 2 days
+                              currentDay === 1 ? 3 : // If Monday, go back 3 days
+                              currentDay - 5;        // If Fri/Sat, go back to Friday
+        startDate.setDate(currentDate.getDate() - daysToSubtract);
     } else {
-        // Set start date (next Friday)
+        // Calculate forward to the next Friday
         startDate = new Date(currentDate);
-        startDate.setDate(currentDate.getDate() + daysUntilFriday);
+        const daysToAdd = 5 - currentDay;
+        startDate.setDate(currentDate.getDate() + daysToAdd);
     }
 
+    // Set start date to beginning of day
     startDate.setHours(0, 0, 0, 0);
     formattedDates.push(startDate.toISOString());
 
-    // Set end date (following Monday)
+    // Calculate end date (Monday)
     endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 3); // Add 3 days to get to Monday
     endDate.setHours(23, 59, 59, 999);
