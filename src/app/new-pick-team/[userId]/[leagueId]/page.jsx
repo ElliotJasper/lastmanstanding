@@ -223,6 +223,14 @@ export default function TeamSelectionPage({ params }) {
       setError(err.message);
       setSuccessMessage(null);
     }
+
+    const [picksData, usersData] = await Promise.all([
+      getPicks(params.userId, params.leagueId),
+      getUsers(params.leagueId),
+    ]);
+
+    setPicks(picksData.availablePicks);
+    setUsers(usersData);
   };
 
   const getResultColor = (result) => {
