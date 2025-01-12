@@ -54,6 +54,13 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const LEAGUES = ["premier-league", "championship", "league-one", "league-two"];
 
+const leaguesMap = {
+  "premier-league": "Premier League",
+  championship: "Championship",
+  "league-one": "League One",
+  "league-two": "League Two",
+}
+
 function isBeforeThursdayMidnight() {
   // Get the current date and time
   const now = new Date();
@@ -61,25 +68,11 @@ function isBeforeThursdayMidnight() {
   // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
   const dayOfWeek = now.getDay();
 
-  // Get the current year, month, and date
-  const year = now.getFullYear();
-  const month = now.getMonth(); // 0-indexed
-  const date = now.getDate();
-
-  // Calculate the upcoming Thursday midnight
-  let thursdayMidnight;
-  if (dayOfWeek <= 4) {
-    // If today is Sunday (0) to Thursday (4)
-    thursdayMidnight = new Date(year, month, date + (4 - dayOfWeek) + 1);
-  } else {
-    // If today is Friday (5) or Saturday (6), move to next week's Thursday
-    thursdayMidnight = new Date(year, month, date + (11 - dayOfWeek));
+  // Return false if today is Friday (5), Saturday (6), Sunday (0), or Monday (1)
+  if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1) {
+    return false;
   }
-  // Set the time for Thursday midnight (start of Friday)
-  thursdayMidnight.setHours(0, 0, 0, 0);
-
-  // Return true if the current time is before Thursday midnight
-  return now < thursdayMidnight;
+  return true
 }
 
 console.log(isBeforeThursdayMidnight());
@@ -111,7 +104,7 @@ async function scrapeScores() {
             awayTeam: event.away.fullName,
             awayScore: event.away.score ? parseInt(event.away.score) : 0,
             eventProgress: event.status,
-            league: event.tournament.name,
+            league: leaguesMap[league],
           };
 
           // Determine game outcome
@@ -187,9 +180,9 @@ async function saveScoresToDatabase(scores) {
       existingGame.date !== newScore.date.slice(0, -1)
     );
   });
-
   // Only upsert games with changes
   if (scoresToUpsert.length > 0) {
+    console.log(scoresToUpsert[0].league);
     const { error } = await supabase.from("games").upsert(
       scoresToUpsert.map((score) => ({
         date: new Date(score.date),
@@ -198,6 +191,7 @@ async function saveScoresToDatabase(scores) {
         homeOutcome: score.homeOutcome,
         awayTeam: score.awayTeam,
         awayScore: score.awayScore,
+        league: score.league,
         awayOutcome: score.awayOutcome,
         eventProgress: score.eventProgress,
         created_at: new Date(),
@@ -223,7 +217,7 @@ async function saveScoresToDatabase(scores) {
 
       if (existingGame) {
         const shouldResetPicks = isBeforeThursdayMidnight();
-
+        console.log("Should reset picks:", shouldResetPicks);
         // Fetch the picks to be deleted for the home team
         const { data: homePicksToDelete, error: homePicksFetchError } = await supabase
           .from("picks")
@@ -253,6 +247,20 @@ async function saveScoresToDatabase(scores) {
           });
 
           await Promise.all(homeUserUpdatePromises);
+        } else if (!shouldResetPicks && homePicksToDelete && homePicksToDelete.length > 0) {
+          const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
+            const { error: updateError } = await supabase
+              .from("league_users")
+              .update({ canPick: false, isEliminated: true })
+              .eq("user_id", pick.user_id)
+              .eq("league_id", pick.league_id);
+
+            if (updateError) {
+              console.error(`Error updating can_pick for home team pick:`, updateError);
+            }
+          });
+
+          await Promise.all(homeUserUpdatePromises);
         }
 
         // Reset can_pick for users who had picks for away team
@@ -260,7 +268,21 @@ async function saveScoresToDatabase(scores) {
           const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
             const { error: updateError } = await supabase
               .from("league_users")
-              .update({ canPick: true })
+              .update({ canPick: true,  })
+              .eq("user_id", pick.user_id)
+              .eq("league_id", pick.league_id);
+
+            if (updateError) {
+              console.error(`Error updating can_pick for away team pick:`, updateError);
+            }
+          });
+
+          await Promise.all(awayUserUpdatePromises);
+        } else if (!shouldResetPicks && awayPicksToDelete && awayPicksToDelete.length > 0) {
+          const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
+            const { error: updateError } = await supabase
+              .from("league_users")
+              .update({ canPick: false, isEliminated: true })
               .eq("user_id", pick.user_id)
               .eq("league_id", pick.league_id);
 
