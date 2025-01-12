@@ -36,7 +36,6 @@ export class DateHandler {
     endDate.setDate(startDate.getDate() + 3); // Add 3 days to get to Monday
     endDate.setHours(23, 59, 59, 999);
     formattedDates.push(endDate.toISOString());
-
     return formattedDates;
 }
 
