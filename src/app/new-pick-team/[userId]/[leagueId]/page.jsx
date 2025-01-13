@@ -126,7 +126,7 @@ function timeUntilThursdayMidnight() {
   const currentDay = now.getDay();
 
   // Calculate how many days until the next Thursday
-  const daysUntilThursday = (5 - currentDay + 7) % 7 || 7;
+  const daysUntilThursday = (2 - currentDay + 7) % 7 || 7;
 
   // Create the target Thursday midnight date
   const thursdayMidnight = new Date(now);
@@ -485,7 +485,7 @@ export default function TeamSelectionPage({ params }) {
 
             <Card className="border-t-4 border-t-[#e01883]">
               <CardHeader>
-                <CardTitle className="text-xl text-[#4a82b0]">Next Deadline</CardTitle>
+                <CardTitle className="text-xl text-[#4a82b0]">Next Weeks Picks Open In</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center">
