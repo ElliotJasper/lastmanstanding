@@ -50,11 +50,13 @@ const submitPick = async (userId, leagueId, selectedPick) => {
     }),
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Failed to submit pick");
+    throw new Error(data.message || "Failed to submit pick");
   }
 
-  return response.json();
+  return data;
 };
 
 // Fetch available picks
@@ -215,22 +217,26 @@ export default function TeamSelectionPage({ params }) {
     }
 
     try {
-      await submitPick(params.userId, params.leagueId, selectedPick);
+      const result = await submitPick(params.userId, params.leagueId, selectedPick);
       setSuccessMessage(`Pick submitted successfully for ${selectedPick.team}!`);
       setError(null);
+
+      // Refresh the picks and users data
+      const [picksData, usersData] = await Promise.all([
+        getPicks(params.userId, params.leagueId),
+        getUsers(params.leagueId),
+      ]);
+
+      setPicks(picksData.availablePicks);
+      setUsers(usersData);
     } catch (err) {
-      alert("Failed to submit pick");
       setError(err.message);
       setSuccessMessage(null);
+      toast.error(err.message, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     }
-
-    const [picksData, usersData] = await Promise.all([
-      getPicks(params.userId, params.leagueId),
-      getUsers(params.leagueId),
-    ]);
-
-    setPicks(picksData.availablePicks);
-    setUsers(usersData);
   };
 
   const getResultColor = (result) => {

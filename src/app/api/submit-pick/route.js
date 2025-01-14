@@ -83,30 +83,7 @@ export async function POST(req) {
       );
     }
 
-    // Update canPick status
-    try {
-      const { error: updateCanPickError } = await supabase
-        .from("league_users")
-        .update({ canPick: false })
-        .eq("user_id", userData.id)
-        .eq("league_id", parseInt(formData.leagueId));
-
-      if (updateCanPickError) {
-        throw new Error(updateCanPickError.message);
-      }
-    } catch (error) {
-      return new Response(
-        JSON.stringify({
-          message: "Error updating user status",
-          error: error.message,
-        }),
-        {
-          status: 500,
-        }
-      );
-    }
-
-    return new Response(JSON.stringify({ message: "Pick submitted successfully." }), {
+    return new Response(JSON.stringify({ ok: "Pick submitted successfully." }), {
       status: 200,
     });
   } catch (error) {
