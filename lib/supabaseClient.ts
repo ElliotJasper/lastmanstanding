@@ -437,7 +437,6 @@ export class SupabaseClient {
    */
   async submitPick(userId: string, leagueId: number, teamName: string, date: string): Promise<void> {
     const gameWeekInfo = await this.getGameWeekInfo(); 
-    console.log("Game Week Info: ", gameWeekInfo);
 
     if (gameWeekInfo == false) {
       throw new Error("Not an active week.");
