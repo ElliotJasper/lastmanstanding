@@ -27,9 +27,11 @@ export default function Rules() {
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">2. How to Play</h2>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Each week, players must select one team they believe will win their match.</li>
+                    <li>Valid games lie on or between Friday to Monday.</li>
                     <li>If the chosen team wins, the player advances to the next week.</li>
                     <li>If the chosen team loses or draws, the player is eliminated from the competition.</li>
                     <li>Players cannot pick the same team more than once during the season.</li>
+                    <li>Valid leagues are from the Premier League down to League Two</li>
                   </ul>
                 </section>
 
@@ -37,10 +39,10 @@ export default function Rules() {
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">3. Selection Deadlines</h2>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>
-                      All selections must be made before Friday of the first match of each game week. Late selections
-                      will not be accepted, and failure to make a selection will result in elimination.
+                      There are no strict deadlines, but selections can only be made to games that have not kicked off
+                      yet.
                     </li>
-                    <li>Selections for the following week open up on Tuesday, giving you 3 days to pick</li>
+                    <li>Selections for the following week open up on Tuesday.</li>
                   </ul>
                 </section>
 
@@ -48,17 +50,17 @@ export default function Rules() {
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">4. Winning the Game</h2>
                   <p>
                     The last player remaining in the competition after all other players have been eliminated is
-                    declared the winner. In the event that all remaining players are eliminated in the same week, the
-                    prize will be shared equally among them.
+                    declared the winner. In the event that all remaining players are eliminated in the same week, no one
+                    wins. Typically at this point a new league is started.
                   </p>
                 </section>
 
                 <section>
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">6. Postponed or Abandoned Matches</h2>
                   <p>
-                    If a selected match is postponed or abandoned, the selection will stand for the rescheduled match,
-                    unless it falls outside the current game week. In such cases, the player will be allowed to make a
-                    new selection.
+                    If a selected match is postponed or abandoned, the selection will be removed and the player has
+                    until the rest of the gameweek to make a new selection. If the player fails to make a new selection,
+                    or there are no more valid selections, they will be eliminated from the competition.
                   </p>
                 </section>
 
@@ -66,7 +68,7 @@ export default function Rules() {
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">7. Multiple Leagues</h2>
                   <p>
                     Players can participate in multiple leagues, but each league is treated as a separate competition
-                    with its own set of rules and prize pool.
+                    with its own picks and eliminations.
                   </p>
                 </section>
 

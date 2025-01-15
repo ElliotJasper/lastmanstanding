@@ -30,11 +30,24 @@ export default function LandingPage() {
           <p className="text-xl text-white/80 mb-8">
             Test your football knowledge, make weekly picks, and be the last one standing!
           </p>
-          <Link href="/home">
-            <Button size="lg" className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">
-              Start Playing Now <ArrowRight className="ml-2" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/home">
+              <Button
+                size="lg"
+                className="bg-[#e01883] hover:bg-[#e01883]/90 text-white font-semibold px-8 py-6 text-lg w-full sm:w-auto"
+              >
+                Start Playing Now
+              </Button>
+            </Link>
+            <Link href="/rules">
+              <Button
+                size="lg"
+                className="bg-transparent hover:bg-white/10 text-white border-2 border-white font-semibold px-8 py-6 text-lg w-full sm:w-auto"
+              >
+                Read the Rules
+              </Button>
+            </Link>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
