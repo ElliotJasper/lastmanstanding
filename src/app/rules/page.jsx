@@ -8,9 +8,7 @@ export default function Rules() {
       <main className="container mx-auto py-8 px-4">
         <Card className="w-full max-w-4xl mx-auto border-t-4 border-t-[#e01883]">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-[#4a82b0]">
-              Football Last Man Standing Rules
-            </CardTitle>
+            <CardTitle className="text-3xl font-bold text-center text-[#4a82b0]">Last Man Standing Rules</CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[calc(100vh-200px)] pr-4">
@@ -18,7 +16,7 @@ export default function Rules() {
                 <section>
                   <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">1. Game Objective</h2>
                   <p>
-                    The objective of Football Last Man Standing is to be the last player remaining in the competition by
+                    The objective of Last Man Standing is to be the last player remaining in the competition by
                     correctly predicting one winning team each week from a selection of matches.
                   </p>
                 </section>
