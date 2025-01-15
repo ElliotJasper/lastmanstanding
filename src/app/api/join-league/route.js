@@ -16,11 +16,14 @@ export async function POST(req) {
 
     if (league.length > 0) {
       await supabaseClient.addUserToLeague(userData.id, league[0].id);
+      return new Response(JSON.stringify({ message: "League joined" }), {
+        status: 200,
+      });
+    } else {
+      return new Response(JSON.stringify({ message: "League not found" }), {
+        status: 404,
+      });
     }
-
-    return new Response(JSON.stringify({ message: "League joined" }), {
-      status: 200,
-    });
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: "Failed to join league" }), {

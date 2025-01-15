@@ -149,29 +149,28 @@ export default function HomePage() {
 
   const handleJoinLeague = async (e) => {
     e.preventDefault();
-
     const formData = { leagueCode };
+
     try {
       const response = await fetch("/api/join-league", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json", // Fixed typo in "Content-Type"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Fetch the updated list of leagues
         await fetchLeagues(user.id);
         setIsJoinLeagueDialogOpen(false);
+      } else if (response.status === 404) {
+        alert(data.message); // Show specific message for invalid league code
       } else {
-        // Handle HTTP errors by parsing the response error message
-        const errorData = await response.json();
-        alert(`Failed to join league: ${errorData.message || "Unknown error"}`);
-        console.error("Failed to join league:", errorData);
+        alert(`Failed to join league: ${data.message || "Unknown error"}`);
       }
     } catch (error) {
-      // Handle any network or unexpected errors
       alert(`Failed to join league: ${error.message}`);
       console.error("Error:", error);
     }
