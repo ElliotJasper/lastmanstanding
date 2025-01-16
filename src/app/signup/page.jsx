@@ -47,7 +47,7 @@ export default function SignUpPage() {
     });
 
     setIsLoading(false);
-    router.push("/home"); // Redirect to home page after successful signup
+    router.push("/signup-confirm"); // Redirect to home page after successful signup
   };
 
   return (
