@@ -388,7 +388,11 @@ export default function TeamSelectionPage({ params }) {
                   <CardTitle className="text-2xl text-[#4a82b0]">Inactive League</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-lg mb-4">This league needs to be activated before you can start playing.</p>
+                  <p className="text-lg mb-4">
+                    This league needs to be activated before you can start playing.
+                    <br />
+                    Players cannot join once league is active.
+                  </p>
                   {leagueInfo.user_id === user.id && (
                     <Button onClick={handleActivate} className="bg-[#4a82b0] hover:bg-[#4a82b0]/90">
                       <PlayCircle className="mr-2 h-4 w-4" /> Activate League
