@@ -34,7 +34,7 @@ export default function LandingPage() {
             <Link href="/home">
               <Button
                 size="lg"
-                className="bg-[#e01883] hover:bg-[#e01883]/90 text-white font-semibold px-8 py-6 text-lg w-full sm:w-auto"
+                className="bg-[#e01883] border-2 border-[#e01883] hover:bg-[#e01883]/90 text-white font-semibold px-8 py-6 text-lg w-full sm:w-auto"
               >
                 Start Playing Now
               </Button>
