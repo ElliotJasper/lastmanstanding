@@ -1,7 +1,6 @@
 import { SupabaseClient } from "../../../../../lib/supabaseClient.ts";
 
 export async function POST(req, { params }) {
-  const { userId } = params;
   const supabaseClient = new SupabaseClient();
 
   const userData = await supabaseClient.getAuthenticatedUser();
@@ -48,7 +47,7 @@ export async function POST(req, { params }) {
       const base64Data = formData.profile_picture.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, "base64");
 
-      const filePath = `${userId}.${extension}`;
+      const filePath = `${userData.id}.${extension}`;
       const { error } = await supabaseClient.uploadAvatar(filePath, buffer, mimeType);
 
       if (error) {
