@@ -474,9 +474,9 @@ export default function TeamSelectionPage({ params }) {
                                           pick.outcome === "win"
                                             ? "bg-green-100"
                                             : pick.outcome === "loss"
-                                            ? "bg-red-400"
+                                            ? "bg-red-100"
                                             : pick.outcome === "draw"
-                                            ? "bg-red-200"
+                                            ? "bg-red-100"
                                             : "bg-blue-100"
                                         }`}
                                       >
