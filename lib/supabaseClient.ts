@@ -188,6 +188,22 @@ export class SupabaseClient {
       throw new Error(`Error fetching picks: ${picksError.message}`);
     }
 
+    for (const pick of picks) {
+      const { data: game, error: gameError } = await this.serviceClient
+        .from("games")
+        .select("homeTeam, awayTeam, homeOutcome, awayOutcome")
+        .eq("date", pick.date)
+        .or(`homeTeam.eq.${pick.teamName},awayTeam.eq.${pick.teamName}`);
+
+      if (gameError) {
+        throw new Error(`Error fetching game: ${gameError.message}`);
+      }
+
+      if (game.length != 0) {
+        pick.outcome = game[0].homeTeam === pick.teamName ? game[0].homeOutcome : game[0].awayOutcome;
+      }
+    }
+    
     return picks;
   }
 

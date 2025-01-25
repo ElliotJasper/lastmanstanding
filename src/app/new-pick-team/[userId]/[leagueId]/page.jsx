@@ -85,6 +85,7 @@ const getUsers = async (leagueId) => {
     throw new Error("Failed to fetch users");
   }
   const data = await response.json();
+  console.log(data);
   return data;
 };
 
@@ -468,7 +469,15 @@ export default function TeamSelectionPage({ params }) {
                                   {user.picks.map((pick) => (
                                     <li
                                       key={pick.teamName}
-                                      className={`text-xs p-1 rounded-md flex items-center justify-start bg-blue-100`}
+                                      className={`text-xs p-1 rounded-md flex items-center justify-start ${
+                                        pick.outcome === "win"
+                                          ? "bg-green-100"
+                                          : pick.outcome === "loss"
+                                          ? "bg-red-100"
+                                          : pick.outcome === "draw"
+                                          ? "bg-orange-100"
+                                          : "bg-blue-100"
+                                      }`}
                                     >
                                       <span className="font-bold w-48 truncate">{pick.teamName}</span>
                                       <span className="w-32 truncate">
