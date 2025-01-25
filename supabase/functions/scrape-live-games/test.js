@@ -3,6 +3,21 @@
 // This enables autocomplete, go to definition, etc.
 
 import { createClient } from "@supabase/supabase-js";
+
+function isBeforeThursdayMidnight() {
+  // Get the current date and time
+  const now = new Date();
+
+  // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const dayOfWeek = now.getDay();
+
+  // Return false if today is Friday (5), Saturday (6), Sunday (0), or Monday (1)
+  if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1) {
+    return false;
+  }
+  return true;
+}
+
 const generateFormattedDatesUntilSunday = () => {
   const formattedDates = [];
   const date_ob = new Date();
@@ -43,56 +58,77 @@ const generateFormattedDatesUntilSunday = () => {
   }
   return formattedDates;
 };
-console.log(generateFormattedDatesUntilSunday());
-
+const LEAGUES = ["premier-league", "championship", "league-one", "league-two"];
+const leaguesMap = {
+  "premier-league": "Premier League",
+  championship: "Championship",
+  "league-one": "League One",
+  "league-two": "League Two",
+};
 // Initialize Supabase client
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
-async function scrapeTodaysScores() {
+async function scrapeLeagueScores(league, todayDate) {
   let games = [];
-  let total = 0;
-  const todayDate = generateFormattedDatesUntilSunday()[0].formatDateAPI;
-  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=${todayDate}&selectedStartDate=${todayDate}&todayDate=${todayDate}&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3Apremier-league&useSdApi=false`;
+  const requestUrl = `https://www.bbc.co.uk/wc-data/container/sport-data-scores-fixtures?selectedEndDate=${todayDate}&selectedStartDate=${todayDate}&todayDate=${todayDate}&urn=urn%3Abbc%3Asportsdata%3Afootball%3Atournament%3A${league}&useSdApi=false`;
 
-  const response = await fetch(requestUrl);
-  const data = await response.json();
-  let path = data.eventGroups;
+  try {
+    const response = await fetch(requestUrl);
+    const data = await response.json();
+    let path = data.eventGroups;
 
-  for (let eventGroup of path) {
-    path = eventGroup.secondaryGroups[0].events;
-    for (let event of path) {
-      total++;
-      let game = {
-        date: event.date.iso,
-        homeTeam: event.home.fullName,
-        homeScore: event.home.score ? parseInt(event.home.score) : 0,
-        awayTeam: event.away.fullName,
-        awayScore: event.away.score ? parseInt(event.away.score) : 0,
-        eventProgress: event.status,
-      };
+    for (let eventGroup of path) {
+      path = eventGroup.secondaryGroups[0].events;
+      for (let event of path) {
+        let game = {
+          league: leaguesMap[league],
+          date: event.date.iso,
+          homeTeam: event.home.fullName,
+          homeScore: event.home.score ? parseInt(event.home.score) : 0,
+          awayTeam: event.away.fullName,
+          awayScore: event.away.score ? parseInt(event.away.score) : 0,
+          eventProgress: event.status,
+        };
 
-      // Determine game outcome
-      if (event.winner && event.winner === "draw") {
-        game.homeOutcome = "draw";
-        game.awayOutcome = "draw";
-      } else if (event.winner && event.winner === "home") {
-        game.homeOutcome = "win";
-        game.awayOutcome = "loss";
-      } else if (event.winner && event.winner === "away") {
-        game.homeOutcome = "loss";
-        game.awayOutcome = "win";
-      } else {
-        game.homeOutcome = "unknown";
-        game.awayOutcome = "unknown";
+        // Determine game outcome
+        if (event.winner && event.winner === "draw") {
+          game.homeOutcome = "draw";
+          game.awayOutcome = "draw";
+        } else if (event.winner && event.winner === "home") {
+          game.homeOutcome = "win";
+          game.awayOutcome = "loss";
+        } else if (event.winner && event.winner === "away") {
+          game.homeOutcome = "loss";
+          game.awayOutcome = "win";
+        } else {
+          game.homeOutcome = "unknown";
+          game.awayOutcome = "unknown";
+        }
+        games.push(game);
       }
-      games.push(game);
     }
+  } catch (error) {
+    console.error(`Error scraping ${league}:`, error);
   }
 
-  if (games.length > 0) {
-    await saveScoresToDatabase(games);
+  return games;
+}
+
+async function scrapeTodaysScores() {
+  let allGames = [];
+  const todayDate = generateFormattedDatesUntilSunday()[0].formatDateAPI;
+
+  // Scrape each league
+  for (const league of LEAGUES) {
+    const games = await scrapeLeagueScores(league, todayDate);
+    console.log(`Scraped ${games.length} games from ${league}`);
+    allGames = [...allGames, ...games];
+  }
+
+  if (allGames.length > 0) {
+    await saveScoresToDatabase(allGames);
   } else {
-    console.log("No games today");
+    console.log("No games found in any league");
   }
 }
 
@@ -100,12 +136,15 @@ async function saveScoresToDatabase(scores) {
   // Retrieve the current game records from the database for comparison
   const { data: existingGames, error: fetchError } = await supabase
     .from("games")
-    .select("date, homeTeam, awayTeam, eventProgress")
+    .select("homeTeam, awayTeam, eventProgress")
     .in(
-      "date",
-      scores.map((score) => new Date(score.date).toISOString())
+      "homeTeam",
+      scores.map((score) => score.homeTeam)
+    )
+    .in(
+      "awayTeam",
+      scores.map((score) => score.awayTeam)
     );
-  console.log("date", existingGames[0].date);
 
   if (fetchError) {
     console.error("Error fetching existing games:", fetchError);
@@ -114,15 +153,17 @@ async function saveScoresToDatabase(scores) {
 
   // Compare eventProgress and call TestFunction if transitioning to 'PostEvent'
   scores.forEach((score) => {
-    const scoreDate = new Date(score.date).toISOString().slice(0, -5);
-    const existingGame = existingGames.find(
-      (g) => g.date === scoreDate && g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam
-    );
+    const existingGame = existingGames.find((g) => g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam);
 
     if (existingGame) {
       if (existingGame.eventProgress !== "PostEvent" && score.eventProgress === "PostEvent") {
-        console.log("PostEvent detected, calling TestFunction for:", score.homeTeam, "vs", score.awayTeam);
+        console.log(`PostEvent detected:`, score.homeTeam, "vs", score.awayTeam);
         TestFunction(score);
+      }
+
+      if (existingGame.eventProgress !== "Postponed" && score.eventProgress === "Postponed") {
+        console.log(`Postponed detected:`, score.homeTeam, "vs", score.awayTeam);
+        EliminateFunction(score);
       }
     }
   });
@@ -130,6 +171,7 @@ async function saveScoresToDatabase(scores) {
   // Perform upsert into the database using Supabase
   const { error } = await supabase.from("games").upsert(
     scores.map((score) => ({
+      league: score.league,
       date: new Date(score.date),
       homeTeam: score.homeTeam,
       homeScore: score.homeScore,
@@ -142,7 +184,7 @@ async function saveScoresToDatabase(scores) {
       updated_at: new Date(),
     })),
     {
-      onConflict: ["date", "homeTeam", "awayTeam"], // Specify the unique constraint columns
+      onConflict: ["homeTeam", "awayTeam"], // Only use team combinations for uniqueness
     }
   );
 
@@ -153,42 +195,150 @@ async function saveScoresToDatabase(scores) {
   }
 }
 
+async function EliminateFunction(score) {
+  let isBeforeThursday = isBeforeThursdayMidnight();
+  const scoreDate = new Date(score.date).toISOString();
+
+  // Fetch the picks to be deleted for the home team
+  const { data: homePicksToDelete, error: homePicksFetchError } = await supabase
+    .from("picks")
+    .select("league_id, user_id")
+    .eq("teamName", score.homeTeam)
+    .eq("date", score.date);
+
+  // Fetch the picks to be deleted for the away team
+  const { data: awayPicksToDelete, error: awayPicksFetchError } = await supabase
+    .from("picks")
+    .select("league_id, user_id")
+    .eq("teamName", score.awayTeam)
+    .eq("date", score.date);
+
+  // Reset can_pick for users who had picks for home team
+  if (homePicksToDelete && homePicksToDelete.length > 0) {
+    const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
+      const { error: updateError } = await supabase
+        .from("league_users")
+        .update({
+          canPick: isBeforeThursday ? true : false,
+          isEliminated: isBeforeThursday ? false : true,
+        })
+        .eq("user_id", pick.user_id)
+        .eq("league_id", pick.league_id);
+
+      if (updateError) {
+        console.error(`Error updating league_users for home team pick:`, updateError);
+      }
+    });
+
+    await Promise.all(homeUserUpdatePromises);
+  }
+
+  // Reset can_pick for users who had picks for away team
+  if (awayPicksToDelete && awayPicksToDelete.length > 0) {
+    const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
+      const { error: updateError } = await supabase
+        .from("league_users")
+        .update({
+          canPick: isBeforeThursday ? true : false,
+          isEliminated: isBeforeThursday ? false : true,
+        })
+        .eq("user_id", pick.user_id)
+        .eq("league_id", pick.league_id);
+
+      if (updateError) {
+        console.error(`Error updating league_users for away team pick:`, updateError);
+      }
+    });
+
+    await Promise.all(awayUserUpdatePromises);
+  }
+
+  // Delete picks for both teams
+  const { error: deleteHomePicksError } = await supabase
+    .from("picks")
+    .delete()
+    .eq("teamName", score.homeTeam)
+    .eq("date", score.date);
+
+  const { error: deleteAwayPicksError } = await supabase
+    .from("picks")
+    .delete()
+    .eq("teamName", score.awayTeam)
+    .eq("date", score.date);
+
+  if (deleteHomePicksError) {
+    console.error(`Error deleting picks for home team ${score.homeTeam}:`, deleteHomePicksError);
+  }
+
+  if (deleteAwayPicksError) {
+    console.error(`Error deleting picks for away team ${score.awayTeam}:`, deleteAwayPicksError);
+  }
+}
+
 async function TestFunction(score) {
+  console.log("in test function");
   const scoreDate = new Date(score.date).toISOString();
   console.log(score);
+
   async function updateEliminationsForTeam(teamName, teamOutcome) {
+    // Modified query to join with leagues table and check isActive
+    const { data: users, error: fetchError } = await supabase
+      .from("picks")
+      .select(
+        `
+        user_id,
+        league_id,
+        id,
+        leagues!inner(isactive)
+      `
+      )
+      .eq("teamName", teamName)
+      .eq("date", scoreDate)
+      .eq("leagues.isactive", true);
+
+    console.log("USERS", users);
+    if (fetchError) {
+      console.error(`Error fetching users who picked ${teamName}:`, fetchError);
+      return;
+    }
+
+    console.log("Team:", teamName);
+    console.log("Score Date:", scoreDate);
+    console.log(`Users who picked ${teamName}:`, users);
+
+    if (users.length === 0) {
+      console.log(`No users picked ${teamName} in active leagues.`);
+      return;
+    }
+
+    // First, update all the picks with the game outcome
+    const { error: picksUpdateError } = await supabase
+      .from("picks")
+      .update({
+        outcome: teamOutcome,
+      })
+      .eq("teamName", teamName)
+      .eq("date", scoreDate);
+
+    if (picksUpdateError) {
+      console.error(`Error updating picks outcome for ${teamName}:`, picksUpdateError);
+      return;
+    }
+
+    console.log(`Updated outcome to ${teamOutcome} for all picks of team ${teamName} on ${scoreDate}`);
+
+    // If the team didn't win, proceed with eliminations
     if (teamOutcome !== "win") {
-      // Find all users who picked the team (either home or away) based on teamName and date
-      const { data: users, error: fetchError } = await supabase
-        .from("picks")
-        .select("user_id, league_id")
-        .eq("teamName", teamName) // Match the team name
-        .eq("date", scoreDate); // Match the date
-      console.log("USERS", users);
-      if (fetchError) {
-        console.error(`Error fetching users who picked ${teamName}:`, fetchError);
-        return;
-      }
-
-      console.log("Team:", teamName);
-      console.log("Score Date:", scoreDate);
-      console.log(`Users who picked ${teamName}:`, users);
-
-      if (users.length === 0) {
-        console.log(`No users picked ${teamName}.`);
-        return;
-      }
-
       // Update the league_users table for the users who picked this team
       const updates = users.map(async (user) => {
         const { error: updateError } = await supabase
           .from("league_users")
           .update({
-            isEliminated: true, // Mark the user as eliminated
-            canPick: false, // Prevent them from picking further
+            isEliminated: true,
+            canPick: false,
           })
-          .eq("user_id", user.user_id) // Match the user_id from picks
-          .eq("league_id", user.league_id); // Match the league_id from picks
+          .eq("user_id", user.user_id)
+          .eq("league_id", user.league_id);
 
         if (updateError) {
           console.error(
@@ -212,34 +362,10 @@ async function TestFunction(score) {
   // Check and update for the away team
   await updateEliminationsForTeam(score.awayTeam, score.awayOutcome);
 }
-scrapeTodaysScores();
+
 // Trigger the score scraping
 //scrapeTodaysScores();
 
-// Setup type definitions for built-in Supabase Runtime APIs
-/*
-import "@supabase/functions-js/edge-runtime.d.ts";
-
-console.log("Hello from Functions!");
-
-Deno.serve(async (req) => {
+(async () => {
   await scrapeTodaysScores();
-
-  const data = {
-    message: `Done`,
-  };
-
-  return new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
-});
-*/
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/scrape-live-games' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+})();

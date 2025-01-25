@@ -282,34 +282,52 @@ async function TestFunction(score) {
   console.log(score);
 
   async function updateEliminationsForTeam(teamName, teamOutcome) {
+    // Modified query to join with leagues table and check isActive
+    const { data: users, error: fetchError } = await supabase
+      .from("picks")
+      .select(`
+        user_id,
+        league_id,
+        id,
+        leagues!inner(isactive)
+      `)
+      .eq("teamName", teamName)
+      .eq("date", scoreDate)
+      .eq("leagues.isactive", true);
+
+    console.log("USERS", users);
+    if (fetchError) {
+      console.error(`Error fetching users who picked ${teamName}:`, fetchError);
+      return;
+    }
+
+    console.log("Team:", teamName);
+    console.log("Score Date:", scoreDate);
+    console.log(`Users who picked ${teamName}:`, users);
+
+    if (users.length === 0) {
+      console.log(`No users picked ${teamName} in active leagues.`);
+      return;
+    }
+
+    // First, update all the picks with the game outcome
+    const { error: picksUpdateError } = await supabase
+      .from("picks")
+      .update({
+        outcome: teamOutcome
+      })
+      .eq("teamName", teamName)
+      .eq("date", scoreDate);
+
+    if (picksUpdateError) {
+      console.error(`Error updating picks outcome for ${teamName}:`, picksUpdateError);
+      return;
+    }
+
+    console.log(`Updated outcome to ${teamOutcome} for all picks of team ${teamName} on ${scoreDate}`);
+
+    // If the team didn't win, proceed with eliminations
     if (teamOutcome !== "win") {
-      // Modified query to join with leagues table and check isActive
-      const { data: users, error: fetchError } = await supabase
-        .from("picks")
-        .select(`
-          user_id,
-          league_id,
-          leagues!inner(isactive)
-        `)
-        .eq("teamName", teamName)
-        .eq("date", scoreDate)
-        .eq("leagues.isactive", true);  // Only get picks from active leagues
-
-      console.log("USERS", users);
-      if (fetchError) {
-        console.error(`Error fetching users who picked ${teamName}:`, fetchError);
-        return;
-      }
-
-      console.log("Team:", teamName);
-      console.log("Score Date:", scoreDate);
-      console.log(`Users who picked ${teamName}:`, users);
-
-      if (users.length === 0) {
-        console.log(`No users picked ${teamName} in active leagues.`);
-        return;
-      }
-
       // Update the league_users table for the users who picked this team
       const updates = users.map(async (user) => {
         const { error: updateError } = await supabase
