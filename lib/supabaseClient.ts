@@ -180,7 +180,7 @@ export class SupabaseClient {
   async getUserPicks(userId: string, leagueId: number): Promise<any> {
     const { data: picks, error: picksError } = await this.serviceClient
       .from("picks")
-      .select("teamName, date")
+      .select("teamName, date, outcome")
       .eq("user_id", userId)
       .eq("league_id", leagueId);
 
