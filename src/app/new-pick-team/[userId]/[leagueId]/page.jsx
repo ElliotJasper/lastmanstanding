@@ -85,7 +85,6 @@ const getUsers = async (leagueId) => {
     throw new Error("Failed to fetch users");
   }
   const data = await response.json();
-  console.log(data);
   return data;
 };
 
@@ -466,29 +465,31 @@ export default function TeamSelectionPage({ params }) {
                               <div className="mt-2 pl-11">
                                 <h4 className="text-sm font-semibold mb-2">Pick History:</h4>
                                 <ul className="space-y-1">
-                                  {user.picks.map((pick) => (
-                                    <li
-                                      key={pick.teamName}
-                                      className={`text-xs p-1 rounded-md flex items-center justify-start ${
-                                        pick.outcome === "win"
-                                          ? "bg-green-100"
-                                          : pick.outcome === "loss"
-                                          ? "bg-red-100"
-                                          : pick.outcome === "draw"
-                                          ? "bg-orange-100"
-                                          : "bg-blue-100"
-                                      }`}
-                                    >
-                                      <span className="font-bold w-48 truncate">{pick.teamName}</span>
-                                      <span className="w-32 truncate">
-                                        {new Date(pick.date).toLocaleDateString("en-US", {
-                                          year: "numeric",
-                                          month: "long",
-                                          day: "numeric",
-                                        })}
-                                      </span>
-                                    </li>
-                                  ))}
+                                  {user.picks
+                                    .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort picks by date
+                                    .map((pick) => (
+                                      <li
+                                        key={pick.teamName}
+                                        className={`text-xs p-1 rounded-md flex items-center justify-start ${
+                                          pick.outcome === "win"
+                                            ? "bg-green-100"
+                                            : pick.outcome === "loss"
+                                            ? "bg-red-400"
+                                            : pick.outcome === "draw"
+                                            ? "bg-red-200"
+                                            : "bg-blue-100"
+                                        }`}
+                                      >
+                                        <span className="font-bold w-48 truncate">{pick.teamName}</span>
+                                        <span className="w-32 truncate">
+                                          {new Date(pick.date).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })}
+                                        </span>
+                                      </li>
+                                    ))}
                                 </ul>
                               </div>
                             </CollapsibleContent>
