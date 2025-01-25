@@ -178,7 +178,6 @@ export default function TeamSelectionPage({ params }) {
           // Fetch league info first
           const leagueData = await getLeagueInfo(params.leagueId);
           setLeagueInfo(leagueData);
-
           // Then fetch other data
           const [picksData, usersData] = await Promise.all([
             getPicks(params.userId, params.leagueId),
@@ -315,7 +314,7 @@ export default function TeamSelectionPage({ params }) {
   return (
     <div className="min-h-screen bg-background w-full">
       <div className="px-8 mt-4">
-        <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">Football Last Man Standing</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">{leagueInfo.name}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             {winner ? (
