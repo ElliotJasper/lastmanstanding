@@ -76,6 +76,6 @@ export class DateHandler {
   static isWeekendPeriod(): boolean {
     const currentDay = new Date().getDay();
     // 5 = Friday, 6 = Saturday, 0 = Sunday, 1 = Monday
-    return currentDay === 1;
+    return currentDay === 1 || currentDay === 0;
   }
 }
