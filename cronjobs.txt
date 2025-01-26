@@ -1,0 +1,13 @@
+LIST OF CRON JOBS THAT RUN ON BACKEND
+
+1. Scrape Live Games - Runs every 5 mins and scrapes all of todays games to update db, and eliminate users who have lost.
+
+2. Calculate Winner - Runs every 30 mins, if a user is last person standing and their game is finished, crown them winner, make league inactive
+
+3. Reschedule games - Runs every day at midnight. Scrapes all future games to try and catch rescheduled games
+
+4. Update can pick - Runs start of every Tuesday. Any players who aren't eliminated have a canPick of true
+
+5. Automatically Eliminate - Runs every Monday at 11. Eliminates players who haven't picked (if it's an active gameweek)
+
+    
