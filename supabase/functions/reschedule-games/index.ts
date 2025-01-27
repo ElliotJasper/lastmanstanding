@@ -216,8 +216,6 @@ async function saveScoresToDatabase(scores) {
       );
 
       if (existingGame) {
-        const shouldResetPicks = isBeforeThursdayMidnight();
-        console.log("Should reset picks:", shouldResetPicks);
         // Fetch the picks to be deleted for the home team
         const { data: homePicksToDelete, error: homePicksFetchError } = await supabase
           .from("picks")
@@ -233,7 +231,7 @@ async function saveScoresToDatabase(scores) {
           .eq("date", existingGame.date);
 
         // Reset can_pick for users who had picks for home team
-        if (shouldResetPicks && homePicksToDelete && homePicksToDelete.length > 0) {
+        if (homePicksToDelete && homePicksToDelete.length > 0) {
           const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
             const { error: updateError } = await supabase
               .from("league_users")
@@ -247,24 +245,10 @@ async function saveScoresToDatabase(scores) {
           });
 
           await Promise.all(homeUserUpdatePromises);
-        } else if (!shouldResetPicks && homePicksToDelete && homePicksToDelete.length > 0) {
-          const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
-            const { error: updateError } = await supabase
-              .from("league_users")
-              .update({ canPick: false, isEliminated: true })
-              .eq("user_id", pick.user_id)
-              .eq("league_id", pick.league_id);
-
-            if (updateError) {
-              console.error(`Error updating can_pick for home team pick:`, updateError);
-            }
-          });
-
-          await Promise.all(homeUserUpdatePromises);
-        }
+        } 
 
         // Reset can_pick for users who had picks for away team
-        if (shouldResetPicks && awayPicksToDelete && awayPicksToDelete.length > 0) {
+        if (awayPicksToDelete && awayPicksToDelete.length > 0) {
           const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
             const { error: updateError } = await supabase
               .from("league_users")
@@ -278,21 +262,7 @@ async function saveScoresToDatabase(scores) {
           });
 
           await Promise.all(awayUserUpdatePromises);
-        } else if (!shouldResetPicks && awayPicksToDelete && awayPicksToDelete.length > 0) {
-          const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
-            const { error: updateError } = await supabase
-              .from("league_users")
-              .update({ canPick: false, isEliminated: true })
-              .eq("user_id", pick.user_id)
-              .eq("league_id", pick.league_id);
-
-            if (updateError) {
-              console.error(`Error updating can_pick for away team pick:`, updateError);
-            }
-          });
-
-          await Promise.all(awayUserUpdatePromises);
-        }
+        } 
 
         // Delete picks for the home team with the old date
         const { error: deleteHomePicksError } = await supabase

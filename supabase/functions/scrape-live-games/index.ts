@@ -198,7 +198,6 @@ async function saveScoresToDatabase(scores) {
 }
 
 async function EliminateFunction(score) {
-  let isBeforeThursday = isBeforeThursdayMidnight();
   const scoreDate = new Date(score.date).toISOString();
 
   // Fetch the picks to be deleted for the home team
@@ -221,8 +220,7 @@ async function EliminateFunction(score) {
       const { error: updateError } = await supabase
         .from("league_users")
         .update({ 
-          canPick: isBeforeThursday ? true : false,
-          isEliminated: isBeforeThursday ? false : true
+          canPick: true,
         })
         .eq("user_id", pick.user_id)
         .eq("league_id", pick.league_id);
@@ -241,8 +239,7 @@ async function EliminateFunction(score) {
       const { error: updateError } = await supabase
         .from("league_users")
         .update({ 
-          canPick: isBeforeThursday ? true : false,
-          isEliminated: isBeforeThursday ? false : true
+          canPick: true,
         })
         .eq("user_id", pick.user_id)
         .eq("league_id", pick.league_id);
