@@ -1,4 +1,4 @@
-import { SupabaseClient } from "../../../../../lib/supabaseClient.ts";
+import { SupabaseClient } from "../../../../lib/supabaseClient";
 
 export async function POST(req, { params }) {
   const supabaseClient = new SupabaseClient();
