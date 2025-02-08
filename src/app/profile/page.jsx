@@ -104,7 +104,7 @@ export default function ProfilePage({ params }) {
         profile_picture: hasUpdatedAvatar ? profilePicture : null,
       };
 
-      const response = await fetch(`/api/update-user-info/${params.userId}`, {
+      const response = await fetch(`/api/update-user-info`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
