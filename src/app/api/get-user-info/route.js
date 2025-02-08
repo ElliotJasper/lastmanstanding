@@ -1,8 +1,6 @@
-import { SupabaseClient } from "../../../../../lib/supabaseClient.ts";
+import { SupabaseClient } from "../../../../lib/supabaseClient";
 
-export async function GET(req, { params }) {
-  const { userId } = params;
-
+export async function GET(req) {
   const supabaseClient = new SupabaseClient();
 
   const userData = await supabaseClient.getAuthenticatedUser();

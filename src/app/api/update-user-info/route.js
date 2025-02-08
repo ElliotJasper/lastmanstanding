@@ -1,6 +1,6 @@
 import { SupabaseClient } from "../../../../lib/supabaseClient";
 
-export async function POST(req, { params }) {
+export async function POST(req) {
   const supabaseClient = new SupabaseClient();
 
   const userData = await supabaseClient.getAuthenticatedUser();

@@ -11,7 +11,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const getUserInfo = async (userId) => {
-  const response = await fetch(`/api/get-user-info/${userId}`, {
+  const response = await fetch(`/api/get-user-info`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -26,7 +26,7 @@ const getUserInfo = async (userId) => {
 };
 
 const getAvatar = async (userId) => {
-  const response = await fetch(`/api/get-user-avatar/${userId}`, {
+  const response = await fetch(`/api/get-user-avatar`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
