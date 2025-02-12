@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Calendar, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -221,6 +221,8 @@ export default function HomePage() {
     );
   }
 
+  const leaguesOrder = ["Premier League", "Championship", "League One", "League Two"];
+
   return (
     <div className="min-h-screen bg-background w-full">
       <main className="container mx-auto px-4 py-8">
@@ -385,58 +387,70 @@ export default function HomePage() {
 
                 {/* Matches section */}
                 <div className="mt-4 space-y-2 sm:space-y-3">
-                  {getMatchesForSelectedDate().map((match, index) => (
-                    <div key={index} className="p-2 sm:p-3 bg-muted/50 rounded-lg max-w-full overflow-hidden">
-                      <div className="flex justify-between items-center text-xs sm:text-sm">
-                        {/* Home Team */}
-                        <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2">
-                          <span
-                            className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
-                            title={match.homeTeam}
-                          >
-                            {match.homeTeam}
-                          </span>
-                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                            <AvatarImage src={match.homeImg} alt={match.homeTeam} />
-                            <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
-                          </Avatar>
-                        </div>
+                  {leaguesOrder.map((league) => {
+                    const matches = getMatchesForSelectedDate().filter((match) => match.league === league);
+                    return (
+                      matches.length > 0 && (
+                        <div key={league}>
+                          <div className="text-lg font-bold mb-2">{league}</div>
+                          {matches.map((match, index) => (
+                            <div key={index} className="p-2 sm:p-3 bg-muted/50 rounded-lg max-w-full overflow-hidden">
+                              <div className="flex justify-between items-center text-xs sm:text-sm">
+                                {/* Home Team */}
+                                <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2">
+                                  <span
+                                    className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
+                                    title={match.homeTeam}
+                                  >
+                                    {match.homeTeam}
+                                  </span>
+                                  <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                                    <AvatarImage src={match.homeImg} alt={match.homeTeam} />
+                                    <AvatarFallback>{match.homeTeam[0]}</AvatarFallback>
+                                  </Avatar>
+                                </div>
 
-                        {/* Score and Time */}
-                        <div className="flex-[1] text-center flex flex-col items-center">
-                          <div>
-                            <span className="font-semibold text-[#e01883] text-xs sm:text-sm">
-                              {match.score === "Upcoming" ? match.date : match.homeScore + " - " + match.awayScore}
-                            </span>
-                            <span className="text-[10px] sm:text-xs text-muted-foreground ml-1 sm:ml-2">
-                              {getMatchStatus(match)}
-                            </span>
-                          </div>
-                          <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                            {new Date(match.date).toLocaleTimeString("en-US", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
-                          </div>
-                        </div>
+                                {/* Score and Time */}
+                                <div className="flex-[1] text-center flex flex-col items-center">
+                                  <div>
+                                    <span className="font-semibold text-[#e01883] text-xs sm:text-sm">
+                                      {match.score === "Upcoming"
+                                        ? match.date
+                                        : match.homeScore + " - " + match.awayScore}
+                                    </span>
+                                    <span className="text-[10px] sm:text-xs text-muted-foreground ml-1 sm:ml-2">
+                                      {getMatchStatus(match)}
+                                    </span>
+                                  </div>
+                                  <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                                    {new Date(match.date).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                      hour12: true,
+                                    })}
+                                  </div>
+                                </div>
 
-                        {/* Away Team */}
-                        <div className="flex-[2] flex items-center gap-1 sm:gap-2">
-                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                            <AvatarImage src={match.awayImg} alt={match.awayTeam} />
-                            <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
-                          </Avatar>
-                          <span
-                            className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
-                            title={match.awayTeam}
-                          >
-                            {match.awayTeam}
-                          </span>
+                                {/* Away Team */}
+                                <div className="flex-[2] flex items-center gap-1 sm:gap-2">
+                                  <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                                    <AvatarImage src={match.awayImg} alt={match.awayTeam} />
+                                    <AvatarFallback>{match.awayTeam[0]}</AvatarFallback>
+                                  </Avatar>
+                                  <span
+                                    className="text-[10px] sm:text-sm truncate max-w-[6rem] sm:max-w-[8rem]"
+                                    title={match.awayTeam}
+                                  >
+                                    {match.awayTeam}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      )
+                    );
+                  })}
                   {getMatchesForSelectedDate().length === 0 && (
                     <div className="text-center text-muted-foreground py-6 sm:py-8 text-sm">
                       No matches scheduled for this date
