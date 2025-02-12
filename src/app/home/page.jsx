@@ -422,13 +422,15 @@ export default function HomePage() {
                                       {getMatchStatus(match)}
                                     </span>
                                   </div>
-                                  <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                                    {new Date(match.date).toLocaleTimeString("en-US", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    })}
-                                  </div>
+                                  {getMatchStatus(match) === "KO" && (
+                                    <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                                      {new Date(match.date).toLocaleTimeString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })}
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* Away Team */}
