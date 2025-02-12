@@ -49,7 +49,7 @@ const teamImageMap: TeamImageMap = {
   "Shrewsbury Town": "/team-images/shrewsbury-town.png",
   "Cambridge United": "/team-images/cambridge-united.png",
   "Burton Albion": "/team-images/burton-albion.png",
-  "Leeds United": "/team-images/leeds.png",
+  "Leeds United": "/team-images/leeds-united.png",
   Burnley: "/team-images/burnley.png",
   "Sheffield United": "/team-images/sheffield-united.png",
   Sunderland: "/team-images/sunderland.png",
