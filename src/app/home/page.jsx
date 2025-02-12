@@ -394,7 +394,18 @@ export default function HomePage() {
                         <div key={league}>
                           <div className="text-lg font-bold mb-2">{league}</div>
                           {matches.map((match, index) => (
-                            <div key={index} className="p-2 sm:p-3 bg-muted/50 rounded-lg max-w-full overflow-hidden">
+                            <div
+                              key={index}
+                              className={`p-2 mb-3 sm:p-3 bg-gray-100 rounded-lg max-w-full overflow-hidden ${
+                                getMatchStatus(match) === "FT"
+                                  ? "border-l-4 border-blue-500"
+                                  : getMatchStatus(match) === "KO"
+                                  ? "border-l-4 border-purple-500"
+                                  : getMatchStatus(match) === ""
+                                  ? "border-l-4 border-yellow-500"
+                                  : ""
+                              }`}
+                            >
                               <div className="flex justify-between items-center text-xs sm:text-sm">
                                 {/* Home Team */}
                                 <div className="flex-[2] flex items-center justify-end gap-1 sm:gap-2">
