@@ -401,9 +401,7 @@ export default function HomePage() {
                                   ? "border-l-4 border-blue-500"
                                   : getMatchStatus(match) === "KO"
                                   ? "border-l-4 border-purple-500"
-                                  : getMatchStatus(match) === ""
-                                  ? "border-l-4 border-yellow-500"
-                                  : ""
+                                  : "border-l-4 border-yellow-500"
                               }`}
                             >
                               <div className="flex justify-between items-center text-xs sm:text-sm">
