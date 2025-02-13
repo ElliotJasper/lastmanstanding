@@ -314,7 +314,12 @@ export default function TeamSelectionPage({ params }) {
   return (
     <div className="min-h-screen bg-background w-full">
       <div className="px-8 mt-4">
-        <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">{leagueInfo.name}</h1>
+        <div className="flex flex-row items-center justify-center gap-4">
+          <h1 className="text-3xl font-bold mb-6 text-center text-[#4a82b0]">{leagueInfo.name}</h1>
+          <p className="text-center text-l text-gray-500 mb-6">
+            Code: <span className="text-[#e01883]">{leagueInfo.code}</span>
+          </p>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             {winner ? (
@@ -388,7 +393,8 @@ export default function TeamSelectionPage({ params }) {
                 </CardHeader>
                 <CardContent className="text-center">
                   <p className="text-lg mb-4">
-                    This league needs to be activated before you can start playing.
+                    This league needs to be activated before you can start playing.{" "}
+                    <strong>Share the league code with your friends.</strong>
                     <br />
                     Players cannot join once league is active.
                   </p>
