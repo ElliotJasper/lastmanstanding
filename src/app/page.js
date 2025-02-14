@@ -109,30 +109,6 @@ export default function LandingPage() {
             </ol>
           </div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center"
-        >
-          <h2 className="text-3xl font-bold text-white mb-4">Stay Updated</h2>
-          <p className="text-white/80 mb-4">Sign up for our newsletter to get the latest news and updates!</p>
-          <form onSubmit={handleSubmit} className="flex justify-center">
-            <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
-              <Button type="submit" className="bg-[#e01883] hover:bg-[#e01883]/90 text-white">
-                Subscribe
-              </Button>
-            </div>
-          </form>
-        </motion.div>
       </main>
 
       <footer className="container mx-auto px-4 py-8 text-center text-white/60">
