@@ -39,6 +39,7 @@ export async function GET(req, { params }) {
       availablePicks: availablePicksWithImages,
       gameWeeks: userPicks.length,
       winner: leagueUser.winner,
+      canPick: leagueUser.canPick,
     }),
     { status: 200 }
   );
