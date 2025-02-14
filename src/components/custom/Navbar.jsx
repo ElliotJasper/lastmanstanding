@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <header className="w-full">
       <nav className="flex flex-col sm:flex-row justify-between items-center w-full bg-[#4a82b0]">
-        <Link href="/" className="text-2xl font-bold text-white mb-4 sm:mb-0">
+        <Link href="/home" className="text-2xl font-bold text-white mb-4 sm:mb-0">
           Last Man Standing
         </Link>
         <div className="flex space-x-4">
