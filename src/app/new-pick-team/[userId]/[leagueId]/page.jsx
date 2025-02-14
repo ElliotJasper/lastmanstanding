@@ -190,6 +190,7 @@ export default function TeamSelectionPage({ params }) {
           setGameWeeks(picksData.gameWeeks);
           setWinner(picksData.winner);
           setUsers(usersData);
+          setCanPick(picksData.canPick);
 
           if (picksData.winner) {
             confetti({
