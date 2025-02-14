@@ -407,6 +407,18 @@ export default function TeamSelectionPage({ params }) {
                   )}
                 </CardContent>
               </Card>
+            ) : !canPick ? (
+              <Card className="border-t-4 border-t-[#e01883]">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-[#4a82b0]">Pick Already Submitted</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-lg mb-4">
+                    You have already submitted your pick for this week. Check back Tuesday or later to make your next
+                    selection.
+                  </p>
+                </CardContent>
+              </Card>
             ) : (
               <Card className="border-t-4 border-t-[#e01883]">
                 <CardHeader>
