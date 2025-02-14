@@ -154,6 +154,7 @@ export default function TeamSelectionPage({ params }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [isEliminated, setIsEliminated] = useState(null);
+  const [canPick, setCanPick] = useState(null);
   const [gameWeeks, setGameWeeks] = useState(null);
   const [winner, setWinner] = useState(null);
   const { user, loading } = useAuth();
