@@ -88,6 +88,7 @@ async function scrapeLeagueScores(league, todayDate) {
           awayTeam: event.away.fullName,
           awayScore: event.away.score ? parseInt(event.away.score) : 0,
           eventProgress: event.status,
+          minute: event.statusComment.value || 0,
         };
 
         // Determine game outcome
@@ -182,6 +183,7 @@ async function saveScoresToDatabase(scores) {
       awayScore: score.awayScore,
       awayOutcome: score.awayOutcome,
       eventProgress: score.eventProgress,
+      minute: score.minute,
       created_at: new Date(),
       updated_at: new Date(),
     })),
