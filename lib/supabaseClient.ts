@@ -159,7 +159,7 @@ export class SupabaseClient {
 
     const { data: games, error: picksError } = await this.serviceClient
       .from("games")
-      .select("homeTeam, awayTeam, homeScore, awayScore, date, id, eventProgress, league")
+      .select("homeTeam, awayTeam, homeScore, awayScore, date, id, eventProgress, league, minute")
       .gte("date", dates[0])
       .lte("date", dates[dates.length - 1])
       .order("date", { ascending: true });
