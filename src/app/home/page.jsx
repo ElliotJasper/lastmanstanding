@@ -113,7 +113,7 @@ export default function HomePage() {
     } else if (match.eventProgress === "PreEvent") {
       return "KO";
     } else if (match.eventPorgress === "MidEvent") {
-      return "";
+      return match.minute;
     }
   };
 
@@ -420,8 +420,8 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Score and Time */}
-                                <div className="flex-[1] text-center flex flex-col items-center">
-                                  <div>
+                                <div className="flex-[1] flex flex-col items-center justify-center text-center">
+                                  <div className="flex flex-col items-center">
                                     <span className="font-semibold text-[#e01883] text-xs sm:text-sm">
                                       {match.score === "Upcoming"
                                         ? match.date
@@ -431,7 +431,9 @@ export default function HomePage() {
                                       {getMatchStatus(match)}
                                     </span>
                                   </div>
-                                  {getMatchStatus(match) === "KO" && (
+
+                                  {/* Ensure time or minute is also centered */}
+                                  {getMatchStatus(match) === "KO" ? (
                                     <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                                       {new Date(match.date).toLocaleTimeString("en-US", {
                                         hour: "2-digit",
@@ -439,7 +441,11 @@ export default function HomePage() {
                                         hour12: true,
                                       })}
                                     </div>
-                                  )}
+                                  ) : getMatchStatus(match) !== "FT" && getMatchStatus(match) !== "KO" ? (
+                                    <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                                      {match.minute}
+                                    </div>
+                                  ) : null}
                                 </div>
 
                                 {/* Away Team */}
