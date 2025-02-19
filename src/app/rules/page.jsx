@@ -23,6 +23,11 @@ export default function Rules() {
               <section>
                 <h2 className="text-2xl font-semibold text-[#4a82b0] mb-2">2. How to Play</h2>
                 <ul className="list-disc pl-6 space-y-2">
+                  <li>
+                    First, either join a league by using the code the league creator has shared with you, or create your
+                    own league and share the code with your friends.{" "}
+                    <strong>Do not activate the league until everyone has joined.</strong>
+                  </li>
                   <li>Each week, players must select one team they believe will win their match.</li>
                   <li>Valid games lie on or between Friday to Monday.</li>
                   <li>If the chosen team wins, the player advances to the next week.</li>
