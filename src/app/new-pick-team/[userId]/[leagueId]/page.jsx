@@ -396,7 +396,9 @@ export default function TeamSelectionPage({ params }) {
                 <CardContent className="text-center">
                   <p className="text-lg mb-4">
                     This league needs to be activated before you can start playing.{" "}
-                    <strong>Share the league code with your friends.</strong>
+                    <strong>
+                      Share the league code with your friends and only activate once they have all joined.
+                    </strong>
                     <br />
                     Players cannot join once league is active.
                   </p>
