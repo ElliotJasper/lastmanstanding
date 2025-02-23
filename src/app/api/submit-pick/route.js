@@ -63,6 +63,21 @@ export async function POST(req) {
       });
     }
 
+    // Ensure the pick is real
+    try {
+      const game = await supabaseClient.getSingleGame(formData);
+
+      if (game.length < 1) {
+        return new Response(JSON.stringify({ message: "This pick is not valid." }), {
+          status: 400,
+        });
+      }
+    } catch (error) {
+      return new Response(JSON.stringify({ message: "Error checking pick." }), {
+        status: 500,
+      });
+    }
+
     // Submit the pick
     try {
       await supabaseClient.submitPick(
