@@ -172,6 +172,28 @@ export class SupabaseClient {
   }
 
   /**
+   * Gets games(s) that match date and team name
+   * @param gameData 
+   * @returns  {Promise<any>} - Game
+   */
+  async getSingleGame(gameData): Promise<any> {
+    const { date, team } = gameData.selectedPick;
+  
+    const { data: game, error: gameError } = await this.serviceClient
+      .from("games")
+      .select("homeTeam, awayTeam, eventProgress, league")
+      .or(`homeTeam.eq.${team},awayTeam.eq.${team}`)
+      .eq("date", date);
+
+    if (gameError) {
+      throw new Error(`Error fetching previous games: ${gameError.message}`);
+    }
+  
+    return game;
+  }
+  
+
+  /**
    * Gets the picks a user has already made in a league
    * @param userId
    * @param leagueId
