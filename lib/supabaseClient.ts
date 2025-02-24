@@ -16,9 +16,9 @@ export class SupabaseClient {
 
   /**
    * Gets the authenticated user or null if not authenticated
-   * @returns {Promise<any>} - The authenticated user
+   * @returns {Promise<User | null>} - The authenticated user or null
    */
-  async getAuthenticatedUser(): Promise<any> {
+  async getAuthenticatedUser(): Promise<User | null> {
     const { data, error: authError } = await this.client.auth.getUser();
 
     if (authError) throw new Error("Error fetching authenticated user");
