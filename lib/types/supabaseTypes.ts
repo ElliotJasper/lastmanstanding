@@ -26,3 +26,8 @@ export interface LeagueUser {
   winner: boolean;
   canPick: boolean;
 }
+
+export interface UserProfile {
+  user_id: string;
+  display_name: string;
+}

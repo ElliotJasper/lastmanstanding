@@ -100,9 +100,9 @@ export class SupabaseClient {
   /**
    * Gets the display names of the users passed in
    * @param userIds
-   * @returns {Promise<any>} - Users display names
+   * @returns {Promise<UserProfile[]>} - Users display names
    */
-  async getUserDisplayNames(userIds: string[]): Promise<any> {
+  async getUserDisplayNames(userIds: string[]): Promise<UserProfile[]> {
     const { data: users, error: usersError } = await this.serviceClient
       .from("profiles")
       .select("user_id, display_name")
@@ -112,7 +112,7 @@ export class SupabaseClient {
       throw new Error(`Error fetching user display names: ${usersError.message}`);
     }
 
-    return users;
+    return users ?? [];
   }
 
   /**
