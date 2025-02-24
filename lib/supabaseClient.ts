@@ -10,6 +10,7 @@ import {
   UserProfile,
 } from "./types/supabaseTypes.js";
 import { User } from "@supabase/supabase-js";
+import { createClient } from "../utils/supabase/server.js";
 import { createServiceClient } from "../utils/supabase/server.js";
 import { DateHandler } from "./dateHandler";
 import { LeagueIdGenerator } from "./leagueIdGenerator";
@@ -320,20 +321,20 @@ export class SupabaseClient {
     if (isWeekendPeriod) {
       return { error: "Cannot activate league during the weekend period" };
     }
-  
+
     if (!this.isLeagueCreator(leagueId, clientId)) {
       return { error: "You are not the creator of this league" };
     }
-  
+
     const { error: leagueError } = await this.serviceClient
       .from("leagues")
       .update({ isactive: true })
       .eq("id", leagueId);
-      
+
     if (leagueError) {
       return { error: `Error activating league: ${leagueError.message}` };
     }
-  
+
     return { success: `League ${leagueId} has been activated` };
   }
 
@@ -470,7 +471,7 @@ export class SupabaseClient {
    * @param date
    */
   async submitPick(userId: string, leagueId: number, teamName: string, date: string): Promise<void> {
-    const gameWeekInfo = await this.getGameWeekInfo(); 
+    const gameWeekInfo = await this.getGameWeekInfo();
 
     if (gameWeekInfo == false) {
       throw new Error("Not an active week.");
@@ -490,7 +491,7 @@ export class SupabaseClient {
     // Update the "league_users" table to set "canpick" to false for the given user_id and league_id
     const { error: updateError } = await this.serviceClient
       .from("league_users")
-      .update({ canPick: false }) 
+      .update({ canPick: false })
       .eq("user_id", userId)
       .eq("league_id", leagueId);
 
