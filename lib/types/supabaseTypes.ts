@@ -38,3 +38,15 @@ export interface PickableGame {
   date: Date;
   league: string;
 }
+
+export interface PreviousGame {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number;
+  awayScore: number;
+  date: Date;
+  id: number;
+  eventProgress: string;
+  league: string;
+  minute: string;
+}

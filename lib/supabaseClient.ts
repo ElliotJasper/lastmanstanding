@@ -155,9 +155,9 @@ export class SupabaseClient {
 
   /**
    * Gets the previous games between certain dates
-   * @returns {Promise<any>} - Previous games
+   * @returns {Promise<PreviousGame[]>} - Previous games
    */
-  async getPreviousGames(): Promise<any> {
+  async getPreviousGames(): Promise<PreviousGame[]> {
     const dates = DateHandler.generateDatesUntilPreviousSunday();
 
     const { data: games, error: picksError } = await this.serviceClient
