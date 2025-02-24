@@ -208,9 +208,9 @@ export class SupabaseClient {
    * Gets the picks a user has already made in a league
    * @param userId
    * @param leagueId
-   * @returns {Promise<any>} - Users picks
+   * @returns {Promise<Pick[]>} - Users picks
    */
-  async getUserPicks(userId: string, leagueId: number): Promise<any> {
+  async getUserPicks(userId: string, leagueId: number): Promise<Pick[]> {
     const { data: picks, error: picksError } = await this.serviceClient
       .from("picks")
       .select("teamName, date, outcome")
@@ -220,7 +220,7 @@ export class SupabaseClient {
     if (picksError) {
       throw new Error(`Error fetching picks: ${picksError.message}`);
     }
-        
+
     return picks;
   }
 
