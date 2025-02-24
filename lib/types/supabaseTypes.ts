@@ -50,3 +50,16 @@ export interface PreviousGame {
   league: string;
   minute: string;
 }
+
+export interface ExistingGame {
+  homeTeam: string;
+  awayTeam: string;
+  eventProgress: string;
+  league: string;
+}
+
+export interface Pick {
+  teamName: string;
+  date: Date;
+  outcome: string;
+}

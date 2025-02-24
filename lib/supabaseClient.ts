@@ -176,10 +176,10 @@ export class SupabaseClient {
 
   /**
    * Gets games(s) that match date and team name
-   * @param gameData 
-   * @returns  {Promise<any>} - Game
+   * @param gameData
+   * @returns  {Promise<ExistingGame[]>} - Game
    */
-  async getSingleGame(date: Date, team: string): Promise<any> {
+  async getSingleGame(date: Date, team: string): Promise<ExistingGame[]> {
     const { data: game, error: gameError } = await this.serviceClient
       .from("games")
       .select("homeTeam, awayTeam, eventProgress, league")
@@ -189,10 +189,9 @@ export class SupabaseClient {
     if (gameError) {
       throw new Error(`Error fetching previous games: ${gameError.message}`);
     }
-  
+
     return game;
   }
-  
 
   /**
    * Gets the picks a user has already made in a league
