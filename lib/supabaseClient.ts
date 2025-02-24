@@ -176,9 +176,7 @@ export class SupabaseClient {
    * @param gameData 
    * @returns  {Promise<any>} - Game
    */
-  async getSingleGame(gameData): Promise<any> {
-    const { date, team } = gameData.selectedPick;
-  
+  async getSingleGame(date: Date, team: string): Promise<any> {
     const { data: game, error: gameError } = await this.serviceClient
       .from("games")
       .select("homeTeam, awayTeam, eventProgress, league")
