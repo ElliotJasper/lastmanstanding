@@ -7,3 +7,10 @@ export interface League {
   isactive: boolean;
   members: number;
 }
+
+export interface UserLeagues {
+  leagues: League[];
+  isEliminated: boolean;
+  canPick: boolean;
+  winner: boolean;
+}

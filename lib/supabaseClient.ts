@@ -28,9 +28,9 @@ export class SupabaseClient {
   /**
    * Gets all the leagues a user is in
    * @param userId
-   * @returns {Promise<any>} - User's leagues
+   * @returns {Promise<UserLeagues[]>} - User's leagues
    */
-  async getUserLeagues(userId: string): Promise<any> {
+  async getUserLeagues(userId: string): Promise<UserLeagues[]> {
     const { data: leagues, error } = await this.serviceClient
       .from("league_users")
       .select(`leagues (*), isEliminated, canPick, winner`)
