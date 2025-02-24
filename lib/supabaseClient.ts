@@ -81,13 +81,14 @@ export class SupabaseClient {
   /**
    * Gets all the users of a league (user_id and isEliminated)
    * @param leagueId
-   * @returns {Promise<any>} - Users of a league
+   * @returns {Promise<LeagueUserSummary>} - Users of a league
    */
-  async getLeagueUsers(leagueId: string): Promise<any> {
+  async getLeagueUsers(leagueId: string): Promise<LeagueUserSummary[]> {
     const { data: leagueUsers, error: leagueUsersError } = await this.serviceClient
       .from("league_users")
       .select("user_id, isEliminated, winner")
-      .eq("league_id", parseInt(leagueId));
+      .eq("league_id", parseInt(leagueId))
+      .returns<LeagueUserSummary[]>();
 
     if (leagueUsersError) {
       throw new Error(`Error fetching league users: ${leagueUsersError.message}`);

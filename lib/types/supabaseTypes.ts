@@ -14,3 +14,9 @@ export interface UserLeagues {
   canPick: boolean;
   winner: boolean;
 }
+
+export interface LeagueUserSummary {
+  user_id: string;
+  isEliminated: boolean;
+  winner: boolean;
+}
