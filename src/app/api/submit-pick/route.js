@@ -65,7 +65,8 @@ export async function POST(req) {
 
     // Ensure the pick is real
     try {
-      const game = await supabaseClient.getSingleGame(formData);
+      const { date, team } = formData.selectedPick;
+      const game = await supabaseClient.getSingleGame(date, team);
 
       if (game.length < 1) {
         return new Response(JSON.stringify({ message: "This pick is not valid." }), {
