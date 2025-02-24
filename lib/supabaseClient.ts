@@ -117,19 +117,19 @@ export class SupabaseClient {
 
   /**
    * Gets all the games that are pickable
-   * @returns {Promise<any>} - All pickable games / teams
+   * @returns {Promise<PickableGame>} - All pickable games / teams
    */
-  async getPickableGames(): Promise<any> {
+  async getPickableGames(): Promise<PickableGame[]> {
     const dates = DateHandler.generateDaysFridayToMonday();
 
     const { data: games, error: picksError } = await this.serviceClient
-    .from("games")
-    .select("homeTeam, awayTeam, date, eventProgress, league")
-    .gt("date", dates[0])
-    .lte("date", dates[dates.length - 1])
-    .eq("eventProgress", "PreEvent") // Filter for matchStatus being PreEvent
-    .order("date", { ascending: true });
-      
+      .from("games")
+      .select("homeTeam, awayTeam, date, eventProgress, league")
+      .gt("date", dates[0])
+      .lte("date", dates[dates.length - 1])
+      .eq("eventProgress", "PreEvent")
+      .order("date", { ascending: true });
+
     if (picksError) {
       console.error("Picks Error Details:", picksError);
       throw new Error(`Error fetching pickable games: ${picksError.message}`);

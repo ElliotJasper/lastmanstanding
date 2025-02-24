@@ -31,3 +31,10 @@ export interface UserProfile {
   user_id: string;
   display_name: string;
 }
+
+export interface PickableGame {
+  team: string;
+  opponent: string;
+  date: Date;
+  league: string;
+}
