@@ -218,9 +218,10 @@ export class SupabaseClient {
    * Gets isEliminated and winner status of a user in a league
    * @param userId
    * @param leagueId
-   * @returns {Promise<any>} - Information about the user in the league
+   * @returns {Promise<LeagueUser>} - Information about the user in the league
    */
-  async getLeagueUserData(userId: string, leagueId: number): Promise<any> {
+
+  async getLeagueUserData(userId: string, leagueId: number): Promise<LeagueUser> {
     const { data: leagueUserData, error: leagueUserDataError } = await this.serviceClient
       .from("league_users")
       .select("isEliminated, winner, canPick")

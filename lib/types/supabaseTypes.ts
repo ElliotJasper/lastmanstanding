@@ -20,3 +20,9 @@ export interface LeagueUserSummary {
   isEliminated: boolean;
   winner: boolean;
 }
+
+export interface LeagueUser {
+  isEliminated: boolean;
+  winner: boolean;
+  canPick: boolean;
+}
