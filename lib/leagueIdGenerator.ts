@@ -1,4 +1,4 @@
-import { SupabaseClient } from "./supabaseClient.ts";
+import { SupabaseClient } from "./supabaseClient";
 
 export class LeagueIdGenerator {
   private supabaseClient: SupabaseClient;
