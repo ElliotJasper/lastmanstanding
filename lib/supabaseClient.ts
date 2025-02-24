@@ -47,10 +47,11 @@ export class SupabaseClient {
    * Creates a league and associates the user with it
    * @param name
    * @param userId
-   * @returns {Promise<any>} - The created league
+   * @returns {Promise<League>} - The created league
    */
-  async createLeague(name: string, userId: string): Promise<any> {
-    const code = await this.leagueIdGenerator.getUniqueLeagueId();
+  async createLeague(name: string, userId: string): Promise<League> {
+    const code: string = await this.leagueIdGenerator.getUniqueLeagueId();
+
     const { data: createdLeague, error: leagueError } = await this.serviceClient
       .from("leagues")
       .insert({
@@ -58,7 +59,8 @@ export class SupabaseClient {
         code: code,
         user_id: userId,
       })
-      .select();
+      .select()
+      .returns<League[]>();
 
     if (leagueError) {
       throw new Error(`Error creating league: ${leagueError.message}`);
