@@ -13,7 +13,7 @@ export class LeagueIdGenerator {
    * Generates a random league ID
    * @returns {string} - A randomly generated league ID
    */
-  generateLeagueId(): Promise<string> {
+  generateLeagueId(): string {
     let leagueId = "";
 
     for (let i = 0; i < this.length; i++) {

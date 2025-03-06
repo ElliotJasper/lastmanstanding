@@ -394,28 +394,13 @@ export class SupabaseClient {
 
       if (file) {
         // If file is found, generate and return its public URL
-        const {
-          data: { publicUrl },
-          error: urlError,
-        } = this.serviceClient.storage.from("avatars").getPublicUrl(fileName);
-
-        if (urlError) {
-          throw new Error(urlError.message);
-        }
+        const { data: publicUrl } = this.serviceClient.storage.from("avatars").getPublicUrl(fileName);
         return publicUrl;
       }
     }
 
     // If no file is found, return the default avatar URL
-    const {
-      data: { publicUrl },
-      error: defaultUrlError,
-    } = this.serviceClient.storage.from("avatars").getPublicUrl("default-pfp.jpg");
-
-    if (defaultUrlError) {
-      throw new Error(defaultUrlError.message);
-    }
-
+    const { data: publicUrl } = this.serviceClient.storage.from("avatars").getPublicUrl("default-pfp.jpg");
     return publicUrl;
   }
 
