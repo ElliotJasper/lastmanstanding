@@ -2,20 +2,20 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-import { createClient } from "jsr:@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 function isBeforeThursdayMidnight() {
-    // Get the current date and time
-    const now = new Date();
+  // Get the current date and time
+  const now = new Date();
 
-    // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-    const dayOfWeek = now.getDay();
-  
-    // Return false if today is Friday (5), Saturday (6), Sunday (0), or Monday (1)
-    if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1) {
-      return false;
-    }
-    return true
+  // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const dayOfWeek = now.getDay();
+
+  // Return false if today is Friday (5), Saturday (6), Sunday (0), or Monday (1)
+  if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1) {
+    return false;
+  }
+  return true;
 }
 
 const generateFormattedDatesUntilSunday = () => {
@@ -64,7 +64,7 @@ const leaguesMap = {
   championship: "Championship",
   "league-one": "League One",
   "league-two": "League Two",
-}
+};
 // Initialize Supabase client
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
@@ -154,9 +154,7 @@ async function saveScoresToDatabase(scores) {
 
   // Compare eventProgress and call TestFunction if transitioning to 'PostEvent'
   scores.forEach((score) => {
-    const existingGame = existingGames.find(
-      (g) => g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam
-    );
+    const existingGame = existingGames.find((g) => g.homeTeam === score.homeTeam && g.awayTeam === score.awayTeam);
 
     if (existingGame) {
       if (existingGame.eventProgress !== "PostEvent" && score.eventProgress === "PostEvent") {
@@ -221,7 +219,7 @@ async function EliminateFunction(score) {
     const homeUserUpdatePromises = homePicksToDelete.map(async (pick) => {
       const { error: updateError } = await supabase
         .from("league_users")
-        .update({ 
+        .update({
           canPick: true,
         })
         .eq("user_id", pick.user_id)
@@ -240,7 +238,7 @@ async function EliminateFunction(score) {
     const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
       const { error: updateError } = await supabase
         .from("league_users")
-        .update({ 
+        .update({
           canPick: true,
         })
         .eq("user_id", pick.user_id)
@@ -284,12 +282,14 @@ async function TestFunction(score) {
     // Modified query to join with leagues table and check isActive
     const { data: users, error: fetchError } = await supabase
       .from("picks")
-      .select(`
+      .select(
+        `
         user_id,
         league_id,
         id,
         leagues!inner(isactive)
-      `)
+      `
+      )
       .eq("teamName", teamName)
       .eq("date", scoreDate)
       .eq("leagues.isactive", true);
@@ -313,7 +313,7 @@ async function TestFunction(score) {
     const { error: picksUpdateError } = await supabase
       .from("picks")
       .update({
-        outcome: teamOutcome
+        outcome: teamOutcome,
       })
       .eq("teamName", teamName)
       .eq("date", scoreDate);
@@ -365,7 +365,7 @@ async function TestFunction(score) {
 //scrapeTodaysScores();
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "@supabase/functions-js/edge-runtime.d.ts";
 
 Deno.serve(async (req) => {
   await scrapeTodaysScores();

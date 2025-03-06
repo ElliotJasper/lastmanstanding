@@ -3,9 +3,9 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "@supabase/functions-js/edge-runtime.d.ts";
 
-import { createClient } from "jsr:@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
@@ -59,7 +59,7 @@ const leaguesMap = {
   championship: "Championship",
   "league-one": "League One",
   "league-two": "League Two",
-}
+};
 
 function isBeforeThursdayMidnight() {
   // Get the current date and time
@@ -72,7 +72,7 @@ function isBeforeThursdayMidnight() {
   if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1) {
     return false;
   }
-  return true
+  return true;
 }
 
 console.log(isBeforeThursdayMidnight());
@@ -245,14 +245,14 @@ async function saveScoresToDatabase(scores) {
           });
 
           await Promise.all(homeUserUpdatePromises);
-        } 
+        }
 
         // Reset can_pick for users who had picks for away team
         if (awayPicksToDelete && awayPicksToDelete.length > 0) {
           const awayUserUpdatePromises = awayPicksToDelete.map(async (pick) => {
             const { error: updateError } = await supabase
               .from("league_users")
-              .update({ canPick: true,  })
+              .update({ canPick: true })
               .eq("user_id", pick.user_id)
               .eq("league_id", pick.league_id);
 
@@ -262,7 +262,7 @@ async function saveScoresToDatabase(scores) {
           });
 
           await Promise.all(awayUserUpdatePromises);
-        } 
+        }
 
         // Delete picks for the home team with the old date
         const { error: deleteHomePicksError } = await supabase

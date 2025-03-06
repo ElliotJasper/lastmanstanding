@@ -1,4 +1,4 @@
-import { createClient } from "jsr:@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
@@ -34,19 +34,17 @@ async function markLastUserAsWinner() {
     // If no active users, deactivate the league
     if (activeUsers.length === 0) {
       const { error: updateLeagueError } = await supabase
-      .from("leagues")
-      .update({
-        isactive: false,
-      })
-      .eq("id", league.id);
+        .from("leagues")
+        .update({
+          isactive: false,
+        })
+        .eq("id", league.id);
 
-    if (updateLeagueError) {
-      console.error(`Error updating deactivating league:`, updateError);
-    } else {
-      console.log(
-        `No winner. League ${league.id} has been deactivated.`
-      );
-    }
+      if (updateLeagueError) {
+        console.error(`Error updating deactivating league:`, updateError);
+      } else {
+        console.log(`No winner. League ${league.id} has been deactivated.`);
+      }
     }
 
     if (activeUsers.length === 1) {
@@ -140,7 +138,7 @@ async function markLastUserAsWinner() {
 }
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "@supabase/functions-js/edge-runtime.d.ts";
 
 // Define and serve the function
 Deno.serve(async (req) => {

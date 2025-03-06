@@ -1,10 +1,7 @@
-import { createClient } from "jsr:@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 const getDatesFridayToMonday = () => {
   const formattedDates = [];
@@ -76,8 +73,7 @@ async function isEnoughGames() {
   }
 }
 
-
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "@supabase/functions-js/edge-runtime.d.ts";
 
 // Define and serve the function
 Deno.serve(async (req) => {

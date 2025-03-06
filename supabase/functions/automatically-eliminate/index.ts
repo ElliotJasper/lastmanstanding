@@ -3,21 +3,15 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js";
+import "@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
-);
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY);
 
 // get all league users from active leagues whos isEliminated is false and canPick is true
 // eliminate them if they have not picked a team
 async function eliminateUsers() {
-  const { data: leagues, error: leaguesError } = await supabase
-    .from("leagues")
-    .select("id")
-    .eq("isactive", true);
+  const { data: leagues, error: leaguesError } = await supabase.from("leagues").select("id").eq("isactive", true);
 
   if (leaguesError) {
     console.error("Error fetching leagues:", leaguesError);
@@ -69,7 +63,7 @@ Deno.serve(async (req) => {
     .from("game_week_info")
     .select("activeWeek")
     .eq("id", 1);
-  
+
   if (gameWeekInfoError) {
     console.error("Error fetching game week info:", gameWeekInfoError);
     return;
@@ -77,10 +71,10 @@ Deno.serve(async (req) => {
 
   // If activeWeek is false, return early
   if (gameWeekInfo[0].activeWeek == false) {
-    return new Response(JSON.stringify({ message: "Not an active week." }), { headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ message: "Not an active week." }), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
-
-
 
   await eliminateUsers();
 
